@@ -6,7 +6,8 @@
 //  Copyright (c) 2015 Peter Zhivkov. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
+#import <Foundation/NSObject.h>
+#import <stdlib.h>
 
 #include "Memory.h"
 

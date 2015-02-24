@@ -19,7 +19,10 @@
 		304251851A9AA874000A44BA /* ThreadLocal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 304251831A9AA874000A44BA /* ThreadLocal.swift */; };
 		304251891A9AA8C4000A44BA /* ThreadLocalTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 304251881A9AA8C4000A44BA /* ThreadLocalTests.swift */; };
 		3042518B1A9AABB1000A44BA /* QueueLocal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3042518A1A9AABB1000A44BA /* QueueLocal.swift */; };
+		307E9C8E1A9C768600F8F85F /* ExecutionContextTetsts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 307E9C8D1A9C768600F8F85F /* ExecutionContextTetsts.swift */; };
 		30B6E51A1A9ABD770059A2FD /* Memory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30B6E5191A9ABD770059A2FD /* Memory.swift */; };
+		30B6E51C1A9C3C540059A2FD /* ExecutionContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30B6E51B1A9C3C540059A2FD /* ExecutionContext.swift */; };
+		30CA97191A9C3E9C00DA05C2 /* Result.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30CA97181A9C3E9C00DA05C2 /* Result.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -51,7 +54,10 @@
 		304251831A9AA874000A44BA /* ThreadLocal.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ThreadLocal.swift; sourceTree = "<group>"; };
 		304251881A9AA8C4000A44BA /* ThreadLocalTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ThreadLocalTests.swift; sourceTree = "<group>"; };
 		3042518A1A9AABB1000A44BA /* QueueLocal.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QueueLocal.swift; sourceTree = "<group>"; };
+		307E9C8D1A9C768600F8F85F /* ExecutionContextTetsts.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExecutionContextTetsts.swift; sourceTree = "<group>"; };
 		30B6E5191A9ABD770059A2FD /* Memory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Memory.swift; sourceTree = "<group>"; };
+		30B6E51B1A9C3C540059A2FD /* ExecutionContext.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExecutionContext.swift; sourceTree = "<group>"; };
+		30CA97181A9C3E9C00DA05C2 /* Result.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Result.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -96,10 +102,12 @@
 				3042517A1A9AA85F000A44BA /* Awaitable.swift */,
 				3042517B1A9AA85F000A44BA /* BlockContext.swift */,
 				3042517E1A9AA86C000A44BA /* Duration.swift */,
+				30B6E51B1A9C3C540059A2FD /* ExecutionContext.swift */,
 				30B6E5191A9ABD770059A2FD /* Memory.swift */,
 				304251811A9AA874000A44BA /* Memory.h */,
 				304251821A9AA874000A44BA /* Memory.m */,
 				3042518A1A9AABB1000A44BA /* QueueLocal.swift */,
+				30CA97181A9C3E9C00DA05C2 /* Result.swift */,
 				304251831A9AA874000A44BA /* ThreadLocal.swift */,
 				304251581A9AA80A000A44BA /* Supporting Files */,
 				304251801A9AA874000A44BA /* Concurrency-Bridging-Header.h */,
@@ -120,6 +128,7 @@
 			isa = PBXGroup;
 			children = (
 				304251881A9AA8C4000A44BA /* ThreadLocalTests.swift */,
+				307E9C8D1A9C768600F8F85F /* ExecutionContextTetsts.swift */,
 				3042516E1A9AA80A000A44BA /* Supporting Files */,
 			);
 			path = ConcurrencyTests;
@@ -251,9 +260,11 @@
 				3042517D1A9AA85F000A44BA /* BlockContext.swift in Sources */,
 				3042518B1A9AABB1000A44BA /* QueueLocal.swift in Sources */,
 				3042515B1A9AA80A000A44BA /* AppDelegate.swift in Sources */,
+				30B6E51C1A9C3C540059A2FD /* ExecutionContext.swift in Sources */,
 				3042517C1A9AA85F000A44BA /* Awaitable.swift in Sources */,
 				304251851A9AA874000A44BA /* ThreadLocal.swift in Sources */,
 				304251841A9AA874000A44BA /* Memory.m in Sources */,
+				30CA97191A9C3E9C00DA05C2 /* Result.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -262,6 +273,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				304251891A9AA8C4000A44BA /* ThreadLocalTests.swift in Sources */,
+				307E9C8E1A9C768600F8F85F /* ExecutionContextTetsts.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -6,7 +6,7 @@
 //  Copyright (c) 2015 Peter Zhivkov. All rights reserved.
 //
 
-import Foundation
+import Darwin
 
 
 
@@ -23,12 +23,14 @@ public class ThreadLocal<T> {
     
     
 
-    public init() {
+    public init!() {
+    
         var ret = Int32(0)
-        do {
-            // Since Swift initializers are guaranteed to be idempotent, there is no need
-            // to use pthread_once() here for the key creation.
-            ret = pthread_key_create(&key, mem_destructorFunc(type: T.self))
+
+        // Since Swift initializers are guaranteed to be idempotent, there is no need
+        // to use pthread_once() here for the key creation.
+        ret = pthread_key_create(&key, mem_destructorFunc(type: T.self))
+        if ret != 0 {
             switch ret {
             case EAGAIN:
                 debugPrintln("Can't create key for thread-local storage due to lack of resources or too many keys.")
@@ -37,7 +39,8 @@ public class ThreadLocal<T> {
             default:
                 break
             }
-        } while ret != 0
+            return nil
+        }
     }
     
     
@@ -72,17 +75,17 @@ public class ThreadLocal<T> {
     /**
     Set a value in the thread-local storage.
     
-    :param: obj The new value to be set for the current thread.
+    :param: value The new value to be set for the current thread.
     */
-    public func set(obj: T?) {
+    public func set(value: T?) {
         var ptr = UnsafeMutablePointer<T>(pthread_getspecific(key))
         if ptr != nil {
-            if obj != nil && self.areSame(ptr[0], obj!) {
+            if value != nil && self.areSame(ptr[0], value!) {
                 return
             }
             mem_releaseStorage(ptr)
         }
-        ptr = obj != nil ? mem_retainStorage(obj!) : nil
+        ptr = value != nil ? mem_retainStorage(value!) : nil
         
         let ret = pthread_setspecific(key, ptr)
         switch ret {
