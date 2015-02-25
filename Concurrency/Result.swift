@@ -10,10 +10,10 @@ import class Foundation.NSError
 
 
 
-public protocol Error: Printable { }
+public protocol Error: Printable {}
 
 
-extension NSError: Error { }
+extension NSError: Error {}
 
 
 
@@ -32,7 +32,19 @@ public enum Result<T> {
     case Failure(Error)
     
     
-    func flatMap<U>(f: T -> Result<U>) -> Result<U> {
+    
+    public static func success(value: T) -> Result<T> {
+        return .Success(Box(value))
+    }
+    
+    
+    public static func failure(err: Error) -> Result<T> {
+        return .Failure(err)
+    }
+    
+    
+    
+    public func flatMap<U>(@noescape f: T -> Result<U>) -> Result<U> {
         switch self {
         case let .Success(box):
             return f(box.unbox)
@@ -42,7 +54,7 @@ public enum Result<T> {
     }
     
     
-    func map<U>(f: T -> U) -> Result<U> {
+    public func map<U>(@noescape f: T -> U) -> Result<U> {
         switch self {
         case let .Success(box):
             return .Success(Box(f(box.unbox)))
@@ -54,12 +66,12 @@ public enum Result<T> {
 
 
 
-func map<T, U>(result: Result<T>, f: T -> U) -> Result<U> {
+public func map<T, U>(result: Result<T>, @noescape f: T -> U) -> Result<U> {
     return result.map(f)
 }
 
 
-@inline(__always) func ??<T>(result: Result<T>, handleError: Error -> T) -> T {
+public func ??<T>(result: Result<T>, @noescape handleError: Error -> T) -> T {
     switch result {
     case let Result.Success(box):
         return box.unbox
@@ -69,7 +81,7 @@ func map<T, U>(result: Result<T>, f: T -> U) -> Result<U> {
 }
 
 
-func ??<T>(result: Result<T>, @autoclosure defaultValue: () -> T) -> T {
+public func ??<T>(result: Result<T>, @autoclosure defaultValue: () -> T) -> T {
     switch result {
     case let Result.Success(box):
         return box.unbox
@@ -79,7 +91,7 @@ func ??<T>(result: Result<T>, @autoclosure defaultValue: () -> T) -> T {
 }
 
 
-func ??<T>(result: Result<T>, @autoclosure defaultValue: () -> T?) -> T? {
+public func ??<T>(result: Result<T>, @autoclosure defaultValue: () -> T?) -> T? {
     switch result {
     case let Result.Success(box):
         return box.unbox

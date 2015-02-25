@@ -26,15 +26,38 @@ class ExecutionContextTetsts: XCTestCase {
         super.tearDown()
     }
 
+    
     func testRunTask() {
         
         var i = 0
         defaultExecutionContext.execute({
             i++
         })
+        sleep(1)
         
         XCTAssert(i == 1, "Execution failure")
     }
-
+    
+    
+    func testRunBlockingTask() {
+        
+        var i = 0
+        defaultExecutionContext.execute({
+            i++
+            
+            XCTAssert(i == 1, "Execution failure")
+            
+            var res = blocking({() -> Int in
+                sleep(1)
+                return i++
+            })
+            
+            XCTAssert(res == 1, "Execution failure")
+            XCTAssert(i == 2, "Execution failure")
+        })
+        
+        sleep(2)
+        XCTAssert(i == 2, "Execution failure")
+    }
 
 }

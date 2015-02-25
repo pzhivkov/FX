@@ -20,6 +20,8 @@
 		304251891A9AA8C4000A44BA /* ThreadLocalTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 304251881A9AA8C4000A44BA /* ThreadLocalTests.swift */; };
 		3042518B1A9AABB1000A44BA /* QueueLocal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3042518A1A9AABB1000A44BA /* QueueLocal.swift */; };
 		307E9C8E1A9C768600F8F85F /* ExecutionContextTetsts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 307E9C8D1A9C768600F8F85F /* ExecutionContextTetsts.swift */; };
+		308449F51A9D417B00EE7593 /* Exception.m in Sources */ = {isa = PBXBuildFile; fileRef = 308449F21A9D417B00EE7593 /* Exception.m */; };
+		308449F61A9D417B00EE7593 /* Exception.swift in Sources */ = {isa = PBXBuildFile; fileRef = 308449F41A9D417B00EE7593 /* Exception.swift */; };
 		30B6E51A1A9ABD770059A2FD /* Memory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30B6E5191A9ABD770059A2FD /* Memory.swift */; };
 		30B6E51C1A9C3C540059A2FD /* ExecutionContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30B6E51B1A9C3C540059A2FD /* ExecutionContext.swift */; };
 		30CA97191A9C3E9C00DA05C2 /* Result.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30CA97181A9C3E9C00DA05C2 /* Result.swift */; };
@@ -55,6 +57,9 @@
 		304251881A9AA8C4000A44BA /* ThreadLocalTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ThreadLocalTests.swift; sourceTree = "<group>"; };
 		3042518A1A9AABB1000A44BA /* QueueLocal.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QueueLocal.swift; sourceTree = "<group>"; };
 		307E9C8D1A9C768600F8F85F /* ExecutionContextTetsts.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExecutionContextTetsts.swift; sourceTree = "<group>"; };
+		308449F21A9D417B00EE7593 /* Exception.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Exception.m; sourceTree = "<group>"; };
+		308449F31A9D417B00EE7593 /* Exception.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Exception.h; sourceTree = "<group>"; };
+		308449F41A9D417B00EE7593 /* Exception.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Exception.swift; sourceTree = "<group>"; };
 		30B6E5191A9ABD770059A2FD /* Memory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Memory.swift; sourceTree = "<group>"; };
 		30B6E51B1A9C3C540059A2FD /* ExecutionContext.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExecutionContext.swift; sourceTree = "<group>"; };
 		30CA97181A9C3E9C00DA05C2 /* Result.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Result.swift; sourceTree = "<group>"; };
@@ -102,6 +107,9 @@
 				3042517A1A9AA85F000A44BA /* Awaitable.swift */,
 				3042517B1A9AA85F000A44BA /* BlockContext.swift */,
 				3042517E1A9AA86C000A44BA /* Duration.swift */,
+				308449F41A9D417B00EE7593 /* Exception.swift */,
+				308449F31A9D417B00EE7593 /* Exception.h */,
+				308449F21A9D417B00EE7593 /* Exception.m */,
 				30B6E51B1A9C3C540059A2FD /* ExecutionContext.swift */,
 				30B6E5191A9ABD770059A2FD /* Memory.swift */,
 				304251811A9AA874000A44BA /* Memory.h */,
@@ -255,12 +263,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				30B6E51A1A9ABD770059A2FD /* Memory.swift in Sources */,
+				308449F51A9D417B00EE7593 /* Exception.m in Sources */,
 				3042517F1A9AA86C000A44BA /* Duration.swift in Sources */,
 				3042515D1A9AA80A000A44BA /* ViewController.swift in Sources */,
 				3042517D1A9AA85F000A44BA /* BlockContext.swift in Sources */,
 				3042518B1A9AABB1000A44BA /* QueueLocal.swift in Sources */,
 				3042515B1A9AA80A000A44BA /* AppDelegate.swift in Sources */,
 				30B6E51C1A9C3C540059A2FD /* ExecutionContext.swift in Sources */,
+				308449F61A9D417B00EE7593 /* Exception.swift in Sources */,
 				3042517C1A9AA85F000A44BA /* Awaitable.swift in Sources */,
 				304251851A9AA874000A44BA /* ThreadLocal.swift in Sources */,
 				304251841A9AA874000A44BA /* Memory.m in Sources */,

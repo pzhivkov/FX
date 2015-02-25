@@ -65,7 +65,6 @@ final class ExecutionContextImpl: ExecutionContext {
     
     
     
-    
     private final class SyncBlockContext: BlockContext {
         
         private let queue: dispatch_queue_t
@@ -76,7 +75,7 @@ final class ExecutionContextImpl: ExecutionContext {
         }
         
         
-        final func blockOn<T>(thunk: () -> T)(_ permission: CanAwait) -> T {
+        final override func blockOn<T>(thunk: () -> T)(_ permission: CanAwait) -> T {
             var result: T! = nil
             dispatch_sync(self.queue, {
                 result = thunk()
@@ -107,7 +106,7 @@ final class ExecutionContextImpl: ExecutionContext {
         // We can use synchronous dispatch here since the queue is concurrent, and there is
         // no danger of deadlock.
         let blockContext = SyncBlockContext(queue: self.queue)
-        queueLocalContext.set(self.queue, value: blockContext)
+        BlockContext.queueLocalContext.set(blockContext, queue: self.queue)
     }
     
     

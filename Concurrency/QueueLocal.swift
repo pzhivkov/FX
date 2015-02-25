@@ -63,7 +63,7 @@ public class QueueLocal<T> {
     :param: queue The queue on which a the value will be set.
     :param: value The value.
     */
-    func set(queue: dispatch_queue_t, value: T?) {
+    func set(value: T?, queue: dispatch_queue_t) {
         
         var ptr = UnsafeMutablePointer<T>(dispatch_queue_get_specific(queue, key))
         if ptr != nil {
