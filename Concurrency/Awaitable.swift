@@ -8,7 +8,7 @@
 
 
 
-public final class CanAwait {
+public class CanAwait {
     private init() {}
 }
 

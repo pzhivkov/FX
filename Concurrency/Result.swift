@@ -43,6 +43,16 @@ public enum Result<T> {
     }
     
     
+    public func get() -> T {
+        switch self {
+        case let .Success(box):
+            return box.unbox
+            
+        case let .Failure(error):
+            return throw(error)
+        }
+    }
+    
     
     public func flatMap<U>(@noescape f: T -> Result<U>) -> Result<U> {
         switch self {

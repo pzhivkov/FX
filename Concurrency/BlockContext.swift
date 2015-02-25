@@ -29,8 +29,13 @@ public class BlockContext {
     }
     
     
-    private class DefaultBlockContext : BlockContext {
-        private override func blockOn<T>(thunk: () -> T)(_ permission: CanAwait) -> T {
+    
+    // MARK: - Class variables and methods
+    
+    
+    
+    private final class DefaultBlockContext: BlockContext {
+        private final override func blockOn<T>(thunk: () -> T)(_ permission: CanAwait) -> T {
             return thunk()
         }
     }
@@ -44,13 +49,9 @@ public class BlockContext {
     
     /// Obtain the current thread's current `BlockContext`
     public static var current: BlockContext {
-        if let local = threadLocalContext.get() {
-            return local
-        } else if let queueLocal = queueLocalContext.get() {
-            return queueLocal
-        } else {
-            return defaultBlockContext
-        }
+        return threadLocalContext.get()
+            ?? queueLocalContext.get()
+            ?? defaultBlockContext
     }
     
     

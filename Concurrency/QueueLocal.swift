@@ -46,7 +46,7 @@ public class QueueLocal<T> {
     
     :returns: The queue-local value.
     */
-    func get() -> T! {
+    func get() -> T? {
         let ptr = UnsafeMutablePointer<T>(dispatch_get_specific(key))
         if ptr == nil {
             return nil

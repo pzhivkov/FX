@@ -10,7 +10,28 @@ import Dispatch
 
 
 
-public typealias Runnable = () -> ()
+public protocol Runnable {
+    func run()
+}
+
+
+public class DefaultRunnable: Runnable {
+ 
+    
+    private let body: () -> ()
+    
+    
+    public init(body: () -> ()) {
+        self.body = body
+    }
+    
+    
+    public func run() {
+        self.body()
+    }
+    
+}
+
 
 
 /**
@@ -82,7 +103,6 @@ final class ExecutionContextImpl: ExecutionContext {
             })
             return result
         }
-        
     }
     
     
@@ -117,7 +137,7 @@ final class ExecutionContextImpl: ExecutionContext {
     
     final func execute(runnable: Runnable) {
         dispatch_async(self.queue, {
-            runnable()
+            runnable.run()
         })
     }
     

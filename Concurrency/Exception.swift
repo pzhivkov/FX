@@ -10,7 +10,7 @@ import class Foundation.NSException
 
 
 
-public protocol Exception: Error {}
+public typealias Exception = Error
 
 
 extension NSException: Exception {}
@@ -58,4 +58,19 @@ public func try<A, B>(block: () -> A)(finally: () -> B) -> A {
     let b = finally()
     return r
 }
+
+
+
+class PrintableError: Error {
+    var description: String
+    
+    init(_ desc: String) {
+        self.description = desc
+    }
+}
+
+
+class IllegalStateException: PrintableError, Exception {}
+
+
 
