@@ -13,6 +13,9 @@ import Darwin
 public class Future<T>: Awaitable {
     
     
+    private let internalExecutionContext = defaultExecutionContext
+    
+    
     
     // MARK: - Initialization
     
@@ -30,6 +33,48 @@ public class Future<T>: Awaitable {
     
     // MARK: - Callbacks
     
+    
+    
+    /**
+    When this future is completed successfully (i.e., with a value),
+    apply the provided callback to the value.
+    
+    If the future has already been completed with a value,
+    this will either be applied immediately or be scheduled asynchronously.
+    */
+    public func onSuccess<U>(body: T -> U?, executionContext: ExecutionContext = defaultExecutionContext) {
+        onComplete({ (result) -> U? in
+            switch result {
+            case let .Success(v):
+                return body(v.unbox)
+            default:
+                break
+            }
+            return nil
+        }, executionContext: executionContext)
+    }
+    
+    
+    /**
+    When this future is completed with a failure (i.e., with an error),
+    apply the provided callback to the error.
+
+    If the future has already been completed with a failure,
+    this will either be applied immediately or be scheduled asynchronously.
+
+    Will not be called in case that the future is completed with a value.
+    */
+    public func onFailure<U>(body: Error -> U?, executionContext: ExecutionContext = defaultExecutionContext) {
+        onComplete({ (result) -> U? in
+            switch result {
+            case let .Failure(t):
+                return body(t)
+            default:
+                break
+            }
+            return nil
+        }, executionContext: executionContext)
+    }
     
     
     /**
@@ -90,6 +135,39 @@ public class Future<T>: Awaitable {
             return nil
         }
     }
+    
+    
+    
+    // MARK: - Projections
+    
+    
+    
+    /**
+    Returns a failed projection of this future.
+    
+    The failed projection is a future holding a value of type `Error`.
+
+    It is completed with a value which is the error of the original future
+    in case the original future is failed.
+    
+    It is failed with a `NoSuchElementError` if the original future is completed successfully.
+    
+    Blocking on this future returns a value if the original future is completed with an exception
+    and throws a corresponding exception if the original future fails.
+    */
+    public var failed: Future<Error> {
+        let p = Promise<Error>()
+        self.onComplete({ (result) -> Future<Error> in
+            switch result {
+            case let .Failure(t):
+                return p.success(t).future
+            case let .Success(v):
+                return p.failure(NoSuchElementException("Future.failed not completed with an error.")).future
+            }
+        }, executionContext: internalExecutionContext)
+        return p.future
+    }
+    
     
     
     
@@ -213,7 +291,6 @@ public class Future<T>: Awaitable {
         }
     }
 
-    
     
     /**
     Tries to add the callback, if already completed, it dispatches the callback to be executed.

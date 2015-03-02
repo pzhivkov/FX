@@ -72,5 +72,8 @@ class PrintableError: Error {
 
 class IllegalStateException: PrintableError, Exception {}
 
+class NoSuchElementException: PrintableError, Exception {}
+
+
 
 
