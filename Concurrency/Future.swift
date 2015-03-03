@@ -7,6 +7,7 @@
 //
 
 import Darwin
+import Dispatch
 
 
 
@@ -21,14 +22,18 @@ public class Future<T>: Awaitable {
     
     
     
-    internal init() {}
-    
-    
-    public init(body: () -> T, executor: ExecutionContext) {
-        let runnable = PromiseCompletingRunnable(future: self, body: body)
-        executor.prepare().execute(runnable)
+    internal init() {
+        // The future is incomplete and has no callbacks.
+        self.state.update(nil, newValue: LinkedNode<CallbackRunnable<T>>())
     }
     
+    
+    public convenience init(executionContext: ExecutionContext = defaultExecutionContext, _ body: () -> T) {
+        self.init()
+        let runnable = PromiseCompletingRunnable(future: self, body: body)
+        executionContext.prepare().execute(runnable)
+    }
+ 
     
     
     // MARK: - Callbacks
@@ -42,16 +47,19 @@ public class Future<T>: Awaitable {
     If the future has already been completed with a value,
     this will either be applied immediately or be scheduled asynchronously.
     */
-    public func onSuccess<U>(body: T -> U?, executionContext: ExecutionContext = defaultExecutionContext) {
-        onComplete({ (result) -> U? in
-            switch result {
+    public func onSuccess(body: T -> Void, executionContext: ExecutionContext) {
+        onComplete({
+            switch $0 {
             case let .Success(v):
                 return body(v.unbox)
             default:
                 break
             }
-            return nil
         }, executionContext: executionContext)
+    }
+    
+    public final func onSuccess(body: T -> Void) {
+        return self.onSuccess(body, executionContext: defaultExecutionContext)
     }
     
     
@@ -64,16 +72,19 @@ public class Future<T>: Awaitable {
 
     Will not be called in case that the future is completed with a value.
     */
-    public func onFailure<U>(body: Error -> U?, executionContext: ExecutionContext = defaultExecutionContext) {
-        onComplete({ (result) -> U? in
-            switch result {
+    public func onFailure(body: Error -> Void, executionContext: ExecutionContext) {
+        onComplete({
+            switch $0 {
             case let .Failure(t):
                 return body(t)
             default:
                 break
             }
-            return nil
         }, executionContext: executionContext)
+    }
+    
+    public final func onFailure(body: Error -> Void) {
+        return self.onFailure(body, executionContext: defaultExecutionContext)
     }
     
     
@@ -84,10 +95,14 @@ public class Future<T>: Awaitable {
     If the future has already been completed,
     this will either be applied immediately or be scheduled asynchronously.
     */
-    public func onComplete<U>(body: Result<T> -> U?, executionContext: ExecutionContext = defaultExecutionContext) {
+    public func onComplete(body: Result<T> -> Void, executionContext: ExecutionContext) {
         let preparedEC = executionContext.prepare()
         let runnable = CallbackRunnable<T>(executionContext: preparedEC, onComplete: body)
         self.dispatchOrAddCallback(runnable)
+    }
+    
+    public final func onComplete(body: Result<T> -> Void) {
+        self.onComplete(body, executionContext: defaultExecutionContext)
     }
 
     
@@ -157,17 +172,16 @@ public class Future<T>: Awaitable {
     */
     public var failed: Future<Error> {
         let p = Promise<Error>()
-        self.onComplete({ (result) -> Future<Error> in
-            switch result {
+        self.onComplete({
+            switch $0 {
             case let .Failure(t):
-                return p.success(t).future
+                p.success(t)
             case let .Success(v):
-                return p.failure(NoSuchElementException("Future.failed not completed with an error.")).future
+                p.failure(NoSuchElementException("Future.failed not completed with an error."))
             }
         }, executionContext: internalExecutionContext)
         return p.future
     }
-    
     
     
     
@@ -404,7 +418,7 @@ internal final class CompletedFuture<T>: Future<T> {
         return false
     }
     
-    override func onComplete<U>(body: Result<T> -> U?, executionContext: ExecutionContext = defaultExecutionContext) {
+    override func onComplete(body: Result<T> -> Void, executionContext: ExecutionContext = defaultExecutionContext) {
         CallbackRunnable(executionContext: executionContext.prepare(), onComplete: body).execute(completedValue)
     }
     
@@ -418,6 +432,8 @@ internal final class CompletedFuture<T>: Future<T> {
 }
 
 
+
+// MARK: -
 
 /**
 A marker indicating that a `Runnable` provided to an `ExecutionContext`
@@ -438,10 +454,10 @@ private final class CallbackRunnable<T>: OnCompleteRunnable {
     
     private let executionContext: ExecutionContext
     
-    private let onComplete: Result<T> -> Any
+    private let onComplete: Result<T> -> Void
     
     
-    init(executionContext: ExecutionContext, onComplete: Result<T> -> Any) {
+    init(executionContext: ExecutionContext, onComplete: Result<T> -> Void) {
         self.executionContext = executionContext
         self.onComplete = onComplete
     }
@@ -449,12 +465,12 @@ private final class CallbackRunnable<T>: OnCompleteRunnable {
     func run() {
         
         precondition(value != nil, "Must set value to non-nil before running!")
-        
+
         try({
             self.onComplete(self.value!)
         })(catch: {
             self.executionContext.reportFailure($0)
-        })
+        }) as Void
     }
     
     func execute(value: Result<T>) {
@@ -475,6 +491,8 @@ private final class CallbackRunnable<T>: OnCompleteRunnable {
 }
 
 
+
+// MARK: -
 
 class PromiseCompletingRunnable<T>: Runnable {
     
@@ -505,6 +523,8 @@ class PromiseCompletingRunnable<T>: Runnable {
 }
 
 
+
+// MARK: -
 
 private final class LinkedNode<T> {
     

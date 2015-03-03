@@ -16,6 +16,30 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
         // Override point for customization after application launch.
+        
+        var value: Int = 0
+        
+        let p = Future<Int> {
+            print("10\n")
+            return 10
+        } 
+        
+        for i in 1..<10 {
+            p.onComplete {
+                let value = 10 + $0.get()
+                print("\(value)\n")
+            }
+            
+            p.onComplete {
+                let value = 10 + $0.get()
+                print("\(value)\n")
+            }
+            
+            p.onComplete {
+                let value = 10 + $0.get()
+                print("\(value)\n")
+            }
+        }
         return true
     }
 

@@ -17,7 +17,7 @@ with an error.
 public class Promise<T> {
     
     
-    // MARK: - Initialization
+    // MARK: Initialization
     
     
     /**
@@ -36,7 +36,7 @@ public class Promise<T> {
     
     
     
-    // MARK: - Public interface
+    // MARK: Public interface
     
     
 
@@ -95,9 +95,9 @@ public class Promise<T> {
     :returns: This promise.
     */
     public final func completeWith(other: Future<T>) -> Promise<T> {
-        other.onComplete({
+        other.onComplete {
             self.complete($0)
-        })
+        }
         return self
     }
     
@@ -110,9 +110,9 @@ public class Promise<T> {
     :returns: This promise.
     */
     public final func tryCompleteWith(other: Future<T>) -> Promise<T> {
-        other.onComplete({
+        other.onComplete {
             self.tryComplete($0)
-        })
+        }
         return self
     }
     
@@ -184,6 +184,10 @@ public class Promise<T> {
 
 public extension Promise {
     
+    // MARK: Class methods
+    
+    
+    
     /**
     Creates an already completed Promise with the specified error.
     
@@ -222,6 +226,8 @@ public extension Promise {
 }
 
 
+
+// MARK: -
 
 /**
 An already completed Future is given its result at creation.
