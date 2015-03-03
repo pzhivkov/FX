@@ -6,36 +6,47 @@
 //  Copyright (c) 2015 Peter Zhivkov. All rights reserved.
 //
 
-import class Foundation.NSException
+import Foundation
 
 
 
-public typealias Exception = Error
-
-
-extension NSException: Exception {}
+public class Exception: NSException, Error {
+    
+    public init(_ desc: String) {
+        super.init(name: desc, reason: nil, userInfo: nil)
+    }
+    
+    public override init(name aName: String, reason aReason: String? = nil, userInfo aUserInfo: [NSObject : AnyObject]? = nil) {
+        super.init(name: aName, reason: aReason, userInfo: aUserInfo)
+    }
+    
+    public required init(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+    }
+}
 
 
 
 public func throw(e: Exception) {
-    fatalError(e.description)
+    exc_throw(e)
 }
 
 public func throw<A>(e: Exception) -> A {
-    fatalError(e.description)
+    exc_throw(e)
+    fatalError()
 }
 
 
 public func try<A>(block: () -> A)(catch: Exception -> A) -> A {
     var retValue: A!
-    exc_catch({ retValue = block() }, { retValue = catch($0) })
+    exc_catch({ retValue = block() }, { retValue = catch($0 as! Exception) })
     return retValue!
 }
 
 
 public func try<A>(block: () -> A)(catch: Exception -> ()) -> A? {
     var retValue: A?
-    exc_catch({ retValue = block() }, { catch($0) })
+    exc_catch({ retValue = block() }, { catch($0 as! Exception) })
     return retValue
 }
 
@@ -74,11 +85,11 @@ class PrintableError: Error {
 }
 
 
-class IllegalStateException: PrintableError, Exception {}
+class IllegalStateException: Exception {}
 
-class NoSuchElementException: PrintableError, Exception {}
+class NoSuchElementException: Exception {}
 
-class TimeoutException: PrintableError, Exception {}
+class TimeoutException: Exception {}
 
 
 

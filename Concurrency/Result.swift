@@ -47,9 +47,8 @@ public enum Result<T> {
         switch self {
         case let .Success(box):
             return box.unbox
-            
         case let .Failure(error):
-            return throw(error)
+            return throw(Exception(name: "Can't obtain value from Result.Failure()", reason: error.description, userInfo: nil))
         }
     }
     

@@ -21,7 +21,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         let p = Future<Int> {
             print("10\n")
-            sleep(4)
+            sleep(UInt32(4))
+            throw(IllegalStateException("Fuck"))
             return 10
         }
         

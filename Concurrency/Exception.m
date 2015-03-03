@@ -20,3 +20,7 @@ void exc_catch(void (^tryBlock)(void), void (^catchBlock)(NSException *))
     }
 }
 
+
+void exc_throw(NSException *e) {
+    @throw e;
+}
