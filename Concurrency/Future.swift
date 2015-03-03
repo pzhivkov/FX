@@ -118,7 +118,7 @@ public class Future<T>: Awaitable {
     */
     public var isCompleted: Bool {
         switch self.state.get() {
-        case is Result<T>:
+        case is Box<Result<T>>:
             return true
             
         case is Future<T>:
@@ -140,8 +140,8 @@ public class Future<T>: Awaitable {
     */
     public var value: Result<T>? {
         switch self.state.get() {
-        case let c as Result<T>:
-            return c
+        case let c as Box<Result<T>>:
+            return c.unbox
             
         case is Future<T>:
             return self.compressedRoot.value
@@ -336,8 +336,8 @@ public class Future<T>: Awaitable {
     */
     private func dispatchOrAddCallback(runnable: CallbackRunnable<T>) {
         switch self.state.get() {
-        case let r as Result<T>:
-            runnable.execute(r)
+        case let r as Box<Result<T>>:
+            runnable.execute(r.unbox)
             
         case is Future<T>:
             self.compressedRoot.dispatchOrAddCallback(runnable)
@@ -379,8 +379,8 @@ public class Future<T>: Awaitable {
     private func link(target: Future<T>) -> Result<()> {
         if self !== target {
             switch self.state.get() {
-            case let r as Result<T>:
-                if !target.tryComplete(r) {
+            case let r as Box<Result<T>>:
+                if !target.tryComplete(r.unbox) {
                     // Currently linking is done from Future.flatMap, which should ensure only
                     // one promise can be completed. Therefore this situation is unexpected.
                     return Result.failure(IllegalStateException("Cannot link completed promises together"))

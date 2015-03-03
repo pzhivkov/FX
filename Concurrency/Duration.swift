@@ -16,15 +16,33 @@ public typealias Duration = dispatch_time_t
 
 public extension Duration {
     
-    public static func forever() -> Duration {
+    public static var Forever: Duration {
         return DISPATCH_TIME_FOREVER
     }
     
-    public static func now() -> Duration {
+    public static var Zero: Duration {
         return DISPATCH_TIME_NOW
     }
     
-    public static func inNano(nanos: Int64) -> Duration {
-        return dispatch_walltime(nil, nanos)
+    public static func inNanos(nanos: Int64) -> Duration {
+        return dispatch_time(DISPATCH_TIME_NOW, nanos)
     }
 }
+
+
+
+public extension Int {
+    
+    public var seconds: Duration {
+        return Duration.inNanos(Int64(self) * Int64(NSEC_PER_SEC))
+    }
+    
+    public var milliseconds: Duration {
+        return Duration.inNanos(Int64(self) * Int64(NSEC_PER_MSEC))
+    }
+    
+    public var microseconds: Duration {
+        return Duration.inNanos(Int64(self) * Int64(NSEC_PER_USEC))
+    }
+}
+

@@ -21,23 +21,21 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         let p = Future<Int> {
             print("10\n")
+            sleep(4)
             return 10
-        } 
+        }
+        
+        println("Future returned \(Await.result(p, atMost: 5.seconds))")
+        
         
         for i in 1..<10 {
             p.onComplete {
-                let value = 10 + $0.get()
-                print("\(value)\n")
-            }
-            
-            p.onComplete {
-                let value = 10 + $0.get()
-                print("\(value)\n")
-            }
-            
-            p.onComplete {
-                let value = 10 + $0.get()
-                print("\(value)\n")
+                let value = i + 10 + $0.get()
+                
+                blocking { () -> Void in
+                    sleep(UInt32(i))
+                    print("\(i) \(value)\n")
+                }
             }
         }
         return true

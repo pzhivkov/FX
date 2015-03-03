@@ -78,7 +78,6 @@ public protocol ExecutionContext {
 
 // MARK: -
 
-
 final class ExecutionContextImpl: ExecutionContext {
     
     private var label: String! = nil
