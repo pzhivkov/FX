@@ -17,6 +17,10 @@ extension NSException: Exception {}
 
 
 
+public func throw(e: Exception) {
+    fatalError(e.description)
+}
+
 public func throw<A>(e: Exception) -> A {
     fatalError(e.description)
 }
@@ -73,6 +77,8 @@ class PrintableError: Error {
 class IllegalStateException: PrintableError, Exception {}
 
 class NoSuchElementException: PrintableError, Exception {}
+
+class TimeoutException: PrintableError, Exception {}
 
 
 

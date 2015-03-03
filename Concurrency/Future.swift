@@ -188,13 +188,36 @@ public class Future<T>: Awaitable {
     // MARK: - Awaitable protocol
     
     
-    
-    public func ready(atMost: Duration)(_ permit: CanAwait) -> Self {
-        fatalError("Not yet implemented.")
+    /**
+    Try waiting for this promise to be completed.
+    */
+    internal final func tryAwait(atMost: Duration) -> Bool {
+        if !self.isCompleted {
+            let l = CompletionLatch()
+            self.onComplete({ _ in
+                l.apply()
+            }, executionContext: internalExecutionContext)
+            l.acquire(atMost)
+            
+            return self.isCompleted
+        } else {
+            return true
+        }
     }
     
+    
+    public func ready(atMost: Duration)(_ permit: CanAwait) -> Self {
+        if self.tryAwait(atMost) {
+            return self
+        } else {
+            return throw(TimeoutException("Future timed out after \(atMost)."))
+        }
+    }
+    
+    
     public func result(atMost: Duration)(_ permit: CanAwait) -> T {
-        fatalError("Not yet implemented.")
+        // ready() throws TimeoutException if timeout so value! is safe here.
+        return self.ready(atMost)(permit).value!.get()
     }
     
     
@@ -520,6 +543,32 @@ class PromiseCompletingRunnable<T>: Runnable {
     func run() {
         return self.runnableBody()
     }
+}
+
+
+
+// MARK: -
+
+private final class CompletionLatch {
+    
+    private var sem: dispatch_semaphore_t!
+    
+    
+    init!() {
+        self.sem = dispatch_semaphore_create(0)
+        if self.sem == nil {
+            return nil
+        }
+    }
+    
+    func apply() {
+        dispatch_semaphore_signal(self.sem)
+    }
+    
+    func acquire(wait: Duration) -> Bool {
+        return dispatch_semaphore_wait(self.sem, wait) == 0
+    }
+    
 }
 
 

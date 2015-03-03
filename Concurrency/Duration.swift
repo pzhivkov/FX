@@ -7,5 +7,24 @@
 //
 
 
+import Dispatch
 
-public typealias Duration = Int64
+
+
+public typealias Duration = dispatch_time_t
+
+
+public extension Duration {
+    
+    public static func forever() -> Duration {
+        return DISPATCH_TIME_FOREVER
+    }
+    
+    public static func now() -> Duration {
+        return DISPATCH_TIME_NOW
+    }
+    
+    public static func inNano(nanos: Int64) -> Duration {
+        return dispatch_walltime(nil, nanos)
+    }
+}
