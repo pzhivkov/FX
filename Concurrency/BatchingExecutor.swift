@@ -56,22 +56,27 @@ internal class BatchingExecutor: ExecutionContext {
         /**
         This method runs in the delegate ExecutionContext's thread
         */
-        func run() {
+        func run() throws {
             precondition(self.executor.tasksLocal.get() == nil)
             
             let prevBlockContext = BlockContext.current
             
-            BlockContext.withBlockContext(self)({ () -> Void in
+            try BlockContext.withBlockContext(self)({ () throws -> Void in
                 
-                try({ () -> Void in
+                defer {
+                    self.executor.tasksLocal.set(nil)
+                    self.parentBlockContext = nil
+                }
+                do {
                     self.parentBlockContext = prevBlockContext
                     
                     var batch = self.initial
                     while let head = batch.data {
                         self.executor.tasksLocal.set(batch.next)
-                        try({
-                            head.run()
-                        })(catch: {
+                        do {
+                            try head.run()
+                        }
+                        catch let t {
                             // If one task throws, move the
                             // remaining tasks to another thread
                             // so we can throw the exception
@@ -79,32 +84,27 @@ internal class BatchingExecutor: ExecutionContext {
                             let remaining = self.executor.tasksLocal.get()!
                             self.executor.tasksLocal.set(nil)
                             let batch = Batch(initial: remaining, executor: self.executor)
-                            self.executor.unbatchedExecute(batch)
-                            throw($0)
-                        }) as Void
+                            try self.executor.unbatchedExecute(batch)
+                            throw t
+                        }
                         batch = self.executor.tasksLocal.get()! // Since head.run() can add entries, always do tasksLocal.get here.
                     }
-                    
-
-                })(finally: { () -> Void in
-                    self.executor.tasksLocal.set(nil)
-                    self.parentBlockContext = nil
-                })
+                }
             })
         }
         
         
-        private override func blockOn<T>(thunk: () -> T)(_ permission: CanAwait) -> T {
+        private override func blockOn<T>(thunk: () throws -> T)(_ permission: CanAwait) throws -> T {
              // If we know there will be blocking, we don't want to keep tasks queued up because it could deadlock.
             let tasks = self.executor.tasksLocal.get()
             self.executor.tasksLocal.set(nil)
             if tasks?.data != nil {
-                self.executor.unbatchedExecute(Batch(initial: tasks!, executor: self.executor))
+                try self.executor.unbatchedExecute(Batch(initial: tasks!, executor: self.executor))
             }
             
             // Now delegate the blocking to the previous BC.
             precondition(self.parentBlockContext != nil)
-            return self.parentBlockContext!.blockOn(thunk)(permission)
+            return try self.parentBlockContext!.blockOn(thunk)(permission)
         }
     }
     
@@ -114,7 +114,7 @@ internal class BatchingExecutor: ExecutionContext {
     
     
     
-    func unbatchedExecute(r: Runnable) {
+    func unbatchedExecute(r: Runnable) throws {
         fatalError("This method must be overridden.")
     }
 
@@ -124,7 +124,7 @@ internal class BatchingExecutor: ExecutionContext {
     
     
     
-    func execute(runnable: Runnable) {
+    func execute(runnable: Runnable) throws {
         if isBatchable(runnable) {
             let nilNode = LinkedList<Runnable>()
             let runNode = LinkedList(runnable)
@@ -133,7 +133,7 @@ internal class BatchingExecutor: ExecutionContext {
             switch self.tasksLocal.get() {
             case nil:
                 // If we aren't in batching mode yet, enqueue batch.
-                self.unbatchedExecute(Batch(initial: runNode, executor: self))
+                try self.unbatchedExecute(Batch(initial: runNode, executor: self))
                 
             case let some:
                 // If we are already in batching mode, add to batch.
@@ -143,13 +143,13 @@ internal class BatchingExecutor: ExecutionContext {
             }
         } else {
             // If not batchable, just delegate to underlying.
-            self.unbatchedExecute(runnable)
+            try self.unbatchedExecute(runnable)
         }
     }
     
     
-    func reportFailure(cause: Error) {
-        println(toString(cause))
+    func reportFailure(cause: ErrorType) {
+        print(String(cause))
     }
     
     

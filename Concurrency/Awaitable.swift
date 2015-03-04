@@ -35,11 +35,11 @@ public protocol Awaitable {
     
     Note: This method should not be called directly; use `Await.ready` instead.
     
-    :param: atMost  maximum wait time
+    - parameter atMost:  maximum wait time
     
-    :returns: self
+    - returns: self
     */
-    func ready(atMost: Duration)(_ permit: CanAwait) -> Self
+    func ready(atMost: Duration)(_ permit: CanAwait) throws -> Self
     
     
     
@@ -48,11 +48,11 @@ public protocol Awaitable {
     
     Note: This method should not be called directly; use `Await.result` instead.
     
-    :param: atMost maximum wait time
+    - parameter atMost: maximum wait time
     
-    :returns: a value of type `T`
+    - returns: a value of type `T`
     */
-    func result(atMost: Duration)(_ permit: CanAwait) -> T
+    func result(atMost: Duration)(_ permit: CanAwait) throws -> T
     
 }
 
@@ -66,28 +66,28 @@ public final class Await {
     /**
     Await the "completed" state of an `Awaitable`.
     
-    :param: awaitable the `Awaitable` to be awaited
-    :param: atMost    maximum wait time
+    - parameter awaitable: the `Awaitable` to be awaited
+    - parameter atMost:    maximum wait time
     
-    :returns: the awaitable
+    - returns: the awaitable
     */
-    public class func ready<A: Awaitable>(awaitable: A, atMost: Duration) -> A {
-        return blocking {
-            awaitable.ready(atMost)(awaitPermission)
+    public class func ready<A: Awaitable>(awaitable: A, atMost: Duration) throws -> A {
+        return try blocking {
+            try awaitable.ready(atMost)(awaitPermission)
         }
     }
     
     /**
     Await and return the result (of type `T`) of an `Awaitable`.
     
-    :param: awaitable the `Awaitable` to be awaited
-    :param: atMost    maximum wait time
+    - parameter awaitable: the `Awaitable` to be awaited
+    - parameter atMost:    maximum wait time
     
-    :returns: the result of the `Awaitable`
+    - returns: the result of the `Awaitable`
     */
-    public class func result<A: Awaitable>(awaitable: A, atMost: Duration) -> A.T {
-        return blocking {
-            awaitable.result(atMost)(awaitPermission)
+    public class func result<A: Awaitable>(awaitable: A, atMost: Duration) throws -> A.T {
+        return try blocking {
+            try awaitable.result(atMost)(awaitPermission)
         }
     }
 }

@@ -13,20 +13,22 @@ import Darwin.C.stdlib
 /// Memory management
 
 
+typealias CMemFreeFunctionPointer = @convention(c) (UnsafeMutablePointer<Void>) -> Void
 
-func mem_destructorFunc<T>(type: T.Type = T.self) -> CFunctionPointer<((UnsafeMutablePointer<Void>) -> Void)> {
+
+func mem_destructorFunc<T>(type: T.Type = T.self) -> CMemFreeFunctionPointer {
     return mem_free_func()
 }
 
 
-func mem_destructorFunc<T: AnyObject>(type: T.Type = T.self) -> CFunctionPointer<((UnsafeMutablePointer<Void>) -> Void)> {
+func mem_destructorFunc<T: AnyObject>(type: T.Type = T.self) -> CMemFreeFunctionPointer {
     return mem_release_func()
 }
 
 
 
 func mem_retainStorage<T>(obj: T) -> UnsafeMutablePointer<T> {
-    let ptr = UnsafeMutablePointer<T>(malloc(UInt(sizeofValue(obj))))
+    let ptr = UnsafeMutablePointer<T>(malloc(sizeofValue(obj)))
     ptr.initialize(obj)
     return ptr
 }

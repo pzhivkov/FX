@@ -16,6 +16,16 @@ public final class AtomicObject<T: AnyObject> {
     
     
     
+    // MARK: - Initialization
+    
+    
+    
+    deinit {
+        update(ref, newValue: nil)
+    }
+    
+    
+    
     // MARK: - Access
     
     

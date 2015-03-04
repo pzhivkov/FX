@@ -71,6 +71,16 @@ public enum Result<T> {
             return .Failure(error)
         }
     }
+    
+    
+    public func foreach(@noescape f: T -> Void) {
+        switch self {
+        case let .Success(box):
+            return f(box.unbox)
+        case let .Failure(_):
+            return
+        }
+    }
 }
 
 

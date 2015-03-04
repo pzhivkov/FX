@@ -20,11 +20,11 @@ public class BlockContext {
     
     Note: BlockContext msut be subclassed, and this method must be always overridden.
     
-    :param: thunk the blocking thunk
+    - parameter thunk: the blocking thunk
     
-    :returns: the thunk's return value
+    - returns: the thunk's return value
     */
-    public func blockOn<T>(thunk: () -> T)(_ permission: CanAwait) -> T {
+    public func blockOn<T>(thunk: () throws -> T)(_ permission: CanAwait) throws -> T {
         fatalError("This method must be overridden.")
     }
     
@@ -35,8 +35,8 @@ public class BlockContext {
     
     
     private final class DefaultBlockContext: BlockContext {
-        private final override func blockOn<T>(thunk: () -> T)(_ permission: CanAwait) -> T {
-            return thunk()
+        private final override func blockOn<T>(thunk: () throws -> T)(_ permission: CanAwait) throws -> T {
+            return try thunk()
         }
     }
     
@@ -58,18 +58,18 @@ public class BlockContext {
     /**
     Pushes a current `BlockContext` while executing `body`.
     
-    :param: blockContext a context
+    - parameter blockContext: a context
     
-    :returns: return value from the `body`
+    - returns: return value from the `body`
     */
-    public class func withBlockContext<T>(blockContext: BlockContext)(_ body: () -> T) -> T {
+    public class func withBlockContext<T>(blockContext: BlockContext)(_ body: () throws -> T) throws -> T {
         let old = BlockContext.threadLocalContext.get() // Can be nil.
-        return try({
-            BlockContext.threadLocalContext.set(blockContext)
-            return body()
-        })(finally: {
+        BlockContext.threadLocalContext.set(blockContext)
+        defer {
             BlockContext.threadLocalContext.set(old)
-        })
+        }
+        
+        return try body()
     }
     
 }
@@ -82,12 +82,12 @@ Properly marking blocking code may improve performance or avoid deadlocks.
 
 Blocking on an `Awaitable` should be done using `Await.result` instead of `blocking`.
 
-:param: body A piece of code which contains potentially blocking or long running calls.
+- parameter body: A piece of code which contains potentially blocking or long running calls.
 
-:returns: The body's return value.
+- returns: The body's return value.
 */
-public func blocking<T>(body: () -> T) -> T {
-    return BlockContext.current.blockOn(body)(awaitPermission)
+public func blocking<T>(body: () throws -> T) throws -> T {
+    return try BlockContext.current.blockOn(body)(awaitPermission)
 }
 
 

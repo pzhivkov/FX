@@ -17,25 +17,27 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
         // Override point for customization after application launch.
         
-        var value: Int = 0
-        
         let p = Future<Int> {
-            print("10\n")
+            print("10\n", appendNewline: false)
             sleep(UInt32(4))
-            //throw(IllegalStateException("Fuck"))
+            //throw Error.IllegalState("Bad state")
             return 10
         }
         
-        println("Future returned \(Await.result(p, atMost: 5.seconds))")
+        //println("Future returned \(Await.result(p, atMost: 5.seconds))")
         
         
         for i in 1..<10 {
             p.onComplete {
-                let value = i + 10 + $0.get()
+                if $0.isFailure {
+                    print("Failure \($0)")
+                    return
+                }
+                let value = try! i + 10 + $0.get()
                 
-                blocking { () -> Void in
-                    //sleep(UInt32(i))
-                    print("\(i) \(value)\n")
+                try! blocking { () -> Void in
+                    sleep(UInt32(i))
+                    print("\(i) \(value)\n", appendNewline: false)
                 }
             }
         }

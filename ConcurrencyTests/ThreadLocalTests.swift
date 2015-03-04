@@ -50,7 +50,7 @@ class ThreadLocalTests: XCTestCase {
             var string = ""
         }
         
-        var obj = TestObject()
+        let obj = TestObject()
         obj.string = "Test"
         
         let tl = ThreadLocal<TestObject>()
@@ -81,7 +81,7 @@ class ThreadLocalTests: XCTestCase {
         
  
         autoreleasepool {
-            var obj = TestObject()
+            let obj = TestObject()
             obj.string = "Test"
 
             tl.set(obj)

@@ -30,7 +30,7 @@ class ExecutionContextTetsts: XCTestCase {
     func testRunTask() {
         
         var i = 0
-        defaultExecutionContext.execute(DefaultRunnable {
+        try! defaultExecutionContext.execute(DefaultRunnable {
             i++
         })
         sleep(1)
@@ -42,12 +42,12 @@ class ExecutionContextTetsts: XCTestCase {
     func testRunBlockingTask() {
         
         var i = 0
-        defaultExecutionContext.execute(DefaultRunnable {
+        try! defaultExecutionContext.execute(DefaultRunnable {
             i++
             
             XCTAssert(i == 1, "Execution failure")
             
-            var res = blocking({() -> Int in
+            let res = try! blocking({() -> Int in
                 sleep(1)
                 return i++
             })

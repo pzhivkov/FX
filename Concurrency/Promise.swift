@@ -23,7 +23,7 @@ public class Promise<T> {
     /**
     Creates a promise object which can be completed with a value.
     
-    :returns: The newly created `Promise` object.
+    - returns: The newly created `Promise` object.
     */
     public init() {
         self.future = Future<T>()
@@ -58,17 +58,17 @@ public class Promise<T> {
     Completes the promise with either an error or a value.
     
     If the promise has already been fulfilled, failed or has timed out,
-    calling this method will throw an IllegalStateException.
+    calling this method will throw an IllegalState error.
     
-    :param: result Either the value or the error to complete the promise with.
+    - parameter result: Either the value or the error to complete the promise with.
     
-    :returns: self
+    - returns: self
     */
-    public func complete(result: Result<T>) -> Promise<T> {
+    public func complete(result: Try<T>) throws -> Promise<T> {
         if self.tryComplete(result) {
             return self
         } else {
-            return throw(IllegalStateException("Promise already completed."))
+            throw Error.IllegalState("Promise already completed.")
         }
     }
     
@@ -78,11 +78,11 @@ public class Promise<T> {
     
     Note: Using this method may result in non-deterministic concurrent programs.
     
-    :param: value Either the value or the error to complete the promise with.
+    - parameter value: Either the value or the error to complete the promise with.
     
-    :returns: If the promise has already been completed returns `false`, or `true` otherwise.
+    - returns: If the promise has already been completed returns `false`, or `true` otherwise.
     */
-    public func tryComplete(value: Result<T>) -> Bool {
+    public func tryComplete(value: Try<T>) -> Bool {
         return self.future.tryComplete(value)
     }
     
@@ -90,24 +90,21 @@ public class Promise<T> {
     /**
     Completes this promise with the specified future, once that future is completed.
     
-    :param: other The future.
+    - parameter other: The future.
     
-    :returns: This promise.
+    - returns: This promise.
     */
     public final func completeWith(other: Future<T>) -> Promise<T> {
-        other.onComplete {
-            self.complete($0)
-        }
-        return self
+        return self.tryCompleteWith(other)
     }
     
     
     /**
     Attempts to complete this promise with the specified future, once that future is completed.
     
-    :param: other The future.
+    - parameter other: The future.
     
-    :returns: This promise.
+    - returns: This promise.
     */
     public final func tryCompleteWith(other: Future<T>) -> Promise<T> {
         other.onComplete {
@@ -121,14 +118,14 @@ public class Promise<T> {
     Completes the promise with a value.
     
     If the promise has already been fulfilled, failed or has timed out,
-    calling this method will throw an IllegalStateException.
+    calling this method will throw an IllegalState error.
     
-    :param: value The value to complete the promise with.
+    - parameter value: The value to complete the promise with.
     
-    :returns: The promise.
+    - returns: The promise.
     */
-    public func success(value: T) -> Promise<T> {
-        return self.complete(Result.success(value))
+    public func success(value: T) throws -> Promise<T> {
+        return try self.complete(Try.Success(value))
     }
     
     
@@ -137,12 +134,12 @@ public class Promise<T> {
     
     Note: Using this method may result in non-deterministic concurrent programs.
     
-    :param: value A value.
+    - parameter value: A value.
     
-    :returns: If the promise has already been completed returns `false`, or `true` otherwise.
+    - returns: If the promise has already been completed returns `false`, or `true` otherwise.
     */
     public func trySuccess(value: T) -> Bool {
-        return self.tryComplete(Result.success(value))
+        return self.tryComplete(Try.Success(value))
     }
     
     
@@ -150,14 +147,14 @@ public class Promise<T> {
     Completes the promise with an error.
     
     If the promise has already been fulfilled, failed or has timed out,
-    calling this method will throw an IllegalStateException.
+    calling this method will throw an IllegalState error.
     
-    :param: cause The error to complete the promise with.
+    - parameter cause: The error to complete the promise with.
     
-    :returns: The promise.
+    - returns: The promise.
     */
-    public func failure(cause: Error) -> Promise<T> {
-        return self.complete(Result.failure(cause))
+    public func failure(cause: ErrorType) throws -> Promise<T> {
+        return try self.complete(Try.Failure(cause))
     }
     
     
@@ -166,12 +163,12 @@ public class Promise<T> {
     
     Note: Using this method may result in non-deterministic concurrent programs.
     
-    :param: cause An error.
+    - parameter cause: An error.
     
-    :returns: If the promise has already been completed returns `false`, or `true` otherwise.
+    - returns: If the promise has already been completed returns `false`, or `true` otherwise.
     */
-    public func tryFailure(cause: Error) -> Bool {
-        return self.tryComplete(Result.failure(cause))
+    public func tryFailure(cause: ErrorType) -> Bool {
+        return self.tryComplete(Try.Failure(cause))
     }
 
 }
@@ -191,35 +188,35 @@ public extension Promise {
     /**
     Creates an already completed Promise with the specified error.
     
-    :param: error The error.
+    - parameter error: The error.
     
-    :returns: The newly created `Promise` object.
+    - returns: The newly created `Promise` object.
     */
-    public class func failed<T>(error: Error) -> Promise<T> {
-        return Promise.fromResult(Result.failure(error))
+    public class func failed<T>(error: ErrorType) -> Promise<T> {
+        return Promise.fromResult(Try.Failure(error))
     }
     
     
     /**
     Creates an already completed Promise with the specified result.
     
-    :param: result The result.
+    - parameter result: The result.
     
-    :returns: The newly created `Promise` object.
+    - returns: The newly created `Promise` object.
     */
     public class func successful<T>(result: T) -> Promise<T> {
-        return Promise.fromResult(Result.success(result))
+        return Promise.fromResult(Try.Success(result))
     }
     
     
     /**
     Creates an already completed Promise with the specified result or error.
     
-    :param: result The result or error.
+    - parameter result: The result or error.
     
-    :returns: The newly created `Promise` object.
+    - returns: The newly created `Promise` object.
     */
-    public class func fromResult<T>(result: Result<T>) -> Promise<T> {
+    public class func fromResult<T>(result: Try<T>) -> Promise<T> {
         return KeptPromise(result)
     }
     
@@ -236,7 +233,7 @@ Useful in Future-composition when a value to contribute is already available.
 */
 private final class KeptPromise<T>: Promise<T> {
     
-    init(_ suppliedValue: Result<T>) {
+    init(_ suppliedValue: Try<T>) {
         super.init(future: CompletedFuture(suppliedValue))
     }
     

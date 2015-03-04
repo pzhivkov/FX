@@ -29,7 +29,7 @@ public class QueueLocal<T> {
     
     Note: It is required that the object should be created in global or static scope.
     
-    :returns: The queue-local storage.
+    - returns: The queue-local storage.
     */
     public init() {
         self.key = unsafeAddressOf(self)
@@ -44,7 +44,7 @@ public class QueueLocal<T> {
     /**
     Get the value in the queue-local storage for the current queue.
     
-    :returns: The queue-local value.
+    - returns: The queue-local value.
     */
     func get() -> T? {
         let ptr = UnsafeMutablePointer<T>(dispatch_get_specific(key))
@@ -60,8 +60,8 @@ public class QueueLocal<T> {
     /**
     Set a value in the queue-local storage for a given queue.
     
-    :param: queue The queue on which a the value will be set.
-    :param: value The value.
+    - parameter queue: The queue on which a the value will be set.
+    - parameter value: The value.
     */
     func set(value: T?, queue: dispatch_queue_t) {
         
@@ -74,7 +74,7 @@ public class QueueLocal<T> {
         }
         ptr = value != nil ? mem_retainStorage(value!) : nil
         
-        dispatch_queue_set_specific(queue, key, ptr, mem_destructorFunc(type: T.self))
+        dispatch_queue_set_specific(queue, key, ptr, mem_destructorFunc(T.self))
     }
     
     

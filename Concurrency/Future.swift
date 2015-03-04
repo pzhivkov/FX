@@ -6,8 +6,14 @@
 //  Copyright (c) 2015 Peter Zhivkov. All rights reserved.
 //
 
-import Darwin
 import Dispatch
+
+
+
+private class Box<T> {
+    let unbox: T
+    init(_ value: T) { self.unbox = value }
+}
 
 
 
@@ -34,12 +40,12 @@ public class Future<T>: Awaitable {
     }
     
     
-    public convenience init(executionContext: ExecutionContext = defaultExecutionContext, _ body: () -> T) {
+    public convenience init(executionContext: ExecutionContext = defaultExecutionContext, _ body: () throws -> T) {
         self.init()
         let runnable = PromiseCompletingRunnable(future: self, body: body)
-        executionContext.prepare().execute(runnable)
+        try! executionContext.prepare().execute(runnable)
     }
- 
+    
     
     
     // MARK: - Callbacks
@@ -53,19 +59,19 @@ public class Future<T>: Awaitable {
     If the future has already been completed with a value,
     this will either be applied immediately or be scheduled asynchronously.
     */
-    public func onSuccess(body: T -> Void, executionContext: ExecutionContext) {
-        onComplete({
+    public func onSuccess(executionContext: ExecutionContext = defaultExecutionContext)(_ body: T throws -> Void) {
+        onComplete(executionContext)({
             switch $0 {
             case let .Success(v):
-                return body(v.unbox)
+                return try body(v)
             default:
                 break
             }
-        }, executionContext: executionContext)
+        })
     }
     
     public final func onSuccess(body: T -> Void) {
-        return self.onSuccess(body, executionContext: defaultExecutionContext)
+        return self.onSuccess()(body)
     }
     
     
@@ -78,19 +84,19 @@ public class Future<T>: Awaitable {
 
     Will not be called in case that the future is completed with a value.
     */
-    public func onFailure(body: Error -> Void, executionContext: ExecutionContext) {
-        onComplete({
+    public func onFailure(executionContext: ExecutionContext = defaultExecutionContext)(_ body: ErrorType throws -> Void) {
+        onComplete(executionContext)({
             switch $0 {
             case let .Failure(t):
-                return body(t)
+                return try body(t)
             default:
                 break
             }
-        }, executionContext: executionContext)
+        })
     }
     
-    public final func onFailure(body: Error -> Void) {
-        return self.onFailure(body, executionContext: defaultExecutionContext)
+    public final func onFailure(body: ErrorType -> Void) {
+        return self.onFailure()(body)
     }
     
     
@@ -101,14 +107,14 @@ public class Future<T>: Awaitable {
     If the future has already been completed,
     this will either be applied immediately or be scheduled asynchronously.
     */
-    public func onComplete(body: Result<T> -> Void, executionContext: ExecutionContext) {
+    public func onComplete(executionContext: ExecutionContext = defaultExecutionContext)(_ body: Try<T> throws -> Void) {
         let preparedEC = executionContext.prepare()
         let runnable = CallbackRunnable<T>(executionContext: preparedEC, onComplete: body)
         self.dispatchOrAddCallback(runnable)
     }
     
-    public final func onComplete(body: Result<T> -> Void) {
-        self.onComplete(body, executionContext: defaultExecutionContext)
+    public final func onComplete(body: Try<T> -> Void) {
+        self.onComplete()(body)
     }
 
     
@@ -124,7 +130,7 @@ public class Future<T>: Awaitable {
     */
     public var isCompleted: Bool {
         switch self.state.get() {
-        case is Box<Result<T>>:
+        case is Box<Try<T>>:
             return true
             
         case is Future<T>:
@@ -140,13 +146,13 @@ public class Future<T>: Awaitable {
     The value of this `Future`.
 
     If the future is not completed, the returned value will be `nil`.
-    If the future is completed, the value will be `Result.Success(t)`
-    if it contains a valid result, or `Result.Failure(error)` if it contains
+    If the future is completed, the value will be `Try.Success(t)`
+    if it contains a valid result, or `Try.Failure(error)` if it contains
     an error.
     */
-    public var value: Result<T>? {
+    public var value: Try<T>? {
         switch self.state.get() {
-        case let c as Box<Result<T>>:
+        case let c as Box<Try<T>>:
             return c.unbox
             
         case is Future<T>:
@@ -159,6 +165,107 @@ public class Future<T>: Awaitable {
     
     
     
+    // MARK: - Monadic operations
+    
+    
+    
+    /**
+    Asynchronously processes the value in the future once the value becomes available.
+    
+    Will not be called if the future fails.
+    */
+    func foreach(executionContext: ExecutionContext = defaultExecutionContext)(_ f: T -> Void) {
+        return self.onComplete(executionContext)({
+            $0.foreach(f)
+        })
+    }
+    
+    func foreach(f: T -> Void) {
+        return self.foreach()(f)
+    }
+    
+
+    /**
+    Creates a new future by applying the 's' function to the successful result of
+    this future, or the 'f' function to the failed result. If there is any error
+    returned when 's' or 'f' is applied, that error will be propagated
+    to the resulting future.
+    
+    - parameter s: function that transforms a successful result of the receiver into a
+              successful result of the returned future
+    - parameter f: function that transforms a failure of the receiver into a failure of
+              the returned future
+    
+    - returns: a future that will be completed with the transformed value
+    */
+    func transform<S>(executionContext: ExecutionContext = defaultExecutionContext)(_ s: T -> S, _ f: ErrorType -> ErrorType) -> Future<S> {
+        let p = Promise<S>()
+        self.onComplete(executionContext)({
+            switch $0 {
+            case let .Success(r):
+                try! p.complete(Try { s(r) })
+            case let .Failure(t):
+                try! p.complete(Try { throw f(t) })
+            }
+        })
+        return p.future
+    }
+    
+    func transform<S>(s: T -> S, _ f: ErrorType -> ErrorType) -> Future<S> {
+        return transform()(s, f)
+    }
+    
+    
+    /**
+    Creates a new future by applying a function to the successful result of
+    this future. If this future is completed with an error then the new
+    future will also contain this error.
+    */
+    func map<S>(executionContext: ExecutionContext = defaultExecutionContext)(_ f: T -> S) -> Future<S> {
+        let p = Promise<S>()
+        self.onComplete(executionContext)({
+            try! p.complete($0.map(f))
+        })
+        return p.future
+    }
+    
+    func map<S>(f: T -> S) -> Future<S> {
+        return map()(f)
+    }
+    
+    
+    /**
+    Creates a new future by applying a function to the successful result of
+    this future, and returns the result of the function as the new future.
+    If this future is completed with an error then the new future will
+    also contain this error.
+    */
+    func flatMap<S>(executionContext: ExecutionContext = defaultExecutionContext)(_ f: T throws -> Future<S>) -> Future<S> {
+        let p = Promise<S>()
+        self.onComplete(executionContext)({
+            switch $0 {
+            case let .Failure(f):
+                try! p.complete(Try.Failure(f))
+            case .Success(let v):
+                do {
+                    let nv = try f(v)
+                    try nv.linkRootOf(p.future)
+                }
+                catch {
+                    try! p.failure(error)
+                }
+            
+            }
+        })
+        return p.future
+    }
+    
+    func flatMap<S>(f: T -> Future<S>) -> Future<S> {
+        return flatMap()(f)
+    }
+    
+    
+    
     // MARK: - Projections
     
     
@@ -166,26 +273,26 @@ public class Future<T>: Awaitable {
     /**
     Returns a failed projection of this future.
     
-    The failed projection is a future holding a value of type `Error`.
+    The failed projection is a future holding a value of type `ErrorType`.
 
     It is completed with a value which is the error of the original future
     in case the original future is failed.
     
-    It is failed with a `NoSuchElementError` if the original future is completed successfully.
+    It is failed with a `NoSuchElement` error if the original future is completed successfully.
     
     Blocking on this future returns a value if the original future is completed with an exception
     and throws a corresponding exception if the original future fails.
     */
-    public var failed: Future<Error> {
-        let p = Promise<Error>()
-        self.onComplete({
+    public var failed: Future<ErrorType> {
+        let p = Promise<ErrorType>()
+        self.onComplete(internalExecutionContext)({
             switch $0 {
             case let .Failure(t):
-                p.success(t)
-            case let .Success(v):
-                p.failure(NoSuchElementException("Future.failed not completed with an error."))
+                try! p.success(t)
+            case .Success(_):
+                try! p.failure(Error.NoSuchElement("Future.failed not completed with an error."))
             }
-        }, executionContext: internalExecutionContext)
+        })
         return p.future
     }
     
@@ -194,15 +301,16 @@ public class Future<T>: Awaitable {
     // MARK: - Awaitable protocol
     
     
+    
     /**
     Try waiting for this promise to be completed.
     */
     internal final func tryAwait(atMost: Duration) -> Bool {
         if !self.isCompleted {
             let l = CompletionLatch()
-            self.onComplete({ _ in
+            self.onComplete(internalExecutionContext)({ _ in
                 l.apply()
-            }, executionContext: internalExecutionContext)
+            })
             l.acquire(atMost)
             
             return self.isCompleted
@@ -212,18 +320,18 @@ public class Future<T>: Awaitable {
     }
     
     
-    public func ready(atMost: Duration)(_ permit: CanAwait) -> Self {
+    public func ready(atMost: Duration)(_ permit: CanAwait) throws -> Self {
         if self.tryAwait(atMost) {
             return self
         } else {
-            return throw(TimeoutException("Future timed out after \(atMost)."))
+            throw Error.Timeout("Future timed out after \(atMost).")
         }
     }
     
     
-    public func result(atMost: Duration)(_ permit: CanAwait) -> T {
-        // ready() throws TimeoutException if timeout so value! is safe here.
-        return self.ready(atMost)(permit).value!.get()
+    public func result(atMost: Duration)(_ permit: CanAwait) throws -> T {
+        // ready() throws Timeout error if timeout so value! is safe here.
+        return try self.ready(atMost)(permit).value!.get()
     }
     
     
@@ -291,11 +399,11 @@ public class Future<T>: Awaitable {
     /**
     Tries to complete the promise with either a value or an error.
     
-    :param: value Either the value or the error to complete the promise with.
+    - parameter value: Either the value or the error to complete the promise with.
     
-    :returns: If the promise has already been completed returns `false`, or `true` otherwise.
+    - returns: If the promise has already been completed returns `false`, or `true` otherwise.
     */
-    internal func tryComplete(value: Result<T>) -> Bool {
+    internal func tryComplete(value: Try<T>) -> Bool {
         switch self.tryCompleteAndGetListeners(value) {
         case nil:
             return false
@@ -317,7 +425,7 @@ public class Future<T>: Awaitable {
     Called by `tryComplete` to store the resolved value and get the list of
     listeners, or `nil` if it is already completed.
     */
-    private func tryCompleteAndGetListeners(value: Result<T>) -> LinkedList<CallbackRunnable<T>>? {
+    private func tryCompleteAndGetListeners(value: Try<T>) -> LinkedList<CallbackRunnable<T>>? {
         switch self.state.get() {
         case let listeners as LinkedList<CallbackRunnable<T>>:
             if self.state.update(listeners, newValue: Box(value)) {
@@ -342,7 +450,7 @@ public class Future<T>: Awaitable {
     */
     private func dispatchOrAddCallback(runnable: CallbackRunnable<T>) {
         switch self.state.get() {
-        case let r as Box<Result<T>>:
+        case let r as Box<Try<T>>:
             runnable.execute(r.unbox)
             
         case is Future<T>:
@@ -367,8 +475,8 @@ public class Future<T>: Awaitable {
     Link this future to the root of another future using `link()`. Should only be
     be called by Future.flatMap.
     */
-    internal final func linkRootOf(target: Future<T>) {
-        link(target.compressedRoot)
+    internal final func linkRootOf(target: Future<T>) throws {
+        try link(target.compressedRoot)
     }
     
     
@@ -382,18 +490,18 @@ public class Future<T>: Awaitable {
     sharing the same completed value - is achieved by simply sending this
     future's value to the target future.
     */
-    private func link(target: Future<T>) -> Result<()> {
+    private func link(target: Future<T>) throws {
         if self !== target {
             switch self.state.get() {
-            case let r as Box<Result<T>>:
+            case let r as Box<Try<T>>:
                 if !target.tryComplete(r.unbox) {
                     // Currently linking is done from Future.flatMap, which should ensure only
                     // one promise can be completed. Therefore this situation is unexpected.
-                    return Result.failure(IllegalStateException("Cannot link completed promises together"))
+                    throw Error.IllegalState("Cannot link completed promises together")
                 }
                 
             case is Future<T>:
-                self.compressedRoot.link(target)
+                try self.compressedRoot.link(target)
                 
             case let listeners as LinkedList<CallbackRunnable<T>>:
                 if self.state.update(listeners, newValue: target) {
@@ -403,13 +511,12 @@ public class Future<T>: Awaitable {
                         }
                     }
                 } else {
-                    self.link(target)
+                    try self.link(target)
                 }
             default:
                 break
             }
         }
-        return Result.success()
     }
 
 }
@@ -426,16 +533,16 @@ Useful in Future-composition when a value to contribute is already available.
 internal final class CompletedFuture<T>: Future<T> {
     
     
-    private var completedValue: Result<T>
+    private var completedValue: Try<T>
 
     
-    init(_ value: Result<T>) {
+    init(_ value: Try<T>) {
         self.completedValue = value
         super.init()
     }
     
     
-    override var value: Result<T>? {
+    override var value: Try<T>? {
         return self.completedValue
     }
     
@@ -443,11 +550,11 @@ internal final class CompletedFuture<T>: Future<T> {
         return true
     }
     
-    override func tryComplete(value: Result<T>) -> Bool {
+    override func tryComplete(value: Try<T>) -> Bool {
         return false
     }
     
-    override func onComplete(body: Result<T> -> Void, executionContext: ExecutionContext = defaultExecutionContext) {
+    override func onComplete(executionContext: ExecutionContext = defaultExecutionContext)(_ body: Try<T> throws -> Void) {
         CallbackRunnable(executionContext: executionContext.prepare(), onComplete: body).execute(completedValue)
     }
     
@@ -455,8 +562,8 @@ internal final class CompletedFuture<T>: Future<T> {
         return self
     }
     
-    override func result(atMost: Duration)(_ permit: CanAwait) -> T {
-        return self.completedValue.get()
+    override func result(atMost: Duration)(_ permit: CanAwait) throws -> T {
+        return try self.completedValue.get()
     }
 }
 
@@ -479,14 +586,14 @@ Precondition: `executor` is prepared, i.e., `executor` has been returned from in
 */
 private final class CallbackRunnable<T>: OnCompleteRunnable {
     
-    var value: Result<T>? = nil
+    var value: Try<T>? = nil
     
     private let executionContext: ExecutionContext
     
-    private let onComplete: Result<T> -> Void
+    private let onComplete: Try<T> throws -> Void
     
     
-    init(executionContext: ExecutionContext, onComplete: Result<T> -> Void) {
+    init(executionContext: ExecutionContext, onComplete: Try<T> throws -> Void) {
         self.executionContext = executionContext
         self.onComplete = onComplete
     }
@@ -494,15 +601,15 @@ private final class CallbackRunnable<T>: OnCompleteRunnable {
     func run() {
         
         precondition(value != nil, "Must set value to non-nil before running!")
-
-        try({
-            self.onComplete(self.value!)
-        })(catch: {
-            self.executionContext.reportFailure($0)
-        }) as Void
+        do {
+            try self.onComplete(self.value!)
+        }
+        catch {
+            self.executionContext.reportFailure(error)
+        }
     }
     
-    func execute(value: Result<T>) {
+    func execute(value: Try<T>) {
         
         precondition(self.value == nil, "Can't complete a promise twice.")
         
@@ -511,11 +618,12 @@ private final class CallbackRunnable<T>: OnCompleteRunnable {
         // Note that we cannot prepare the ExecutionContext at this point, since we might
         // already be running on a different thread!
         
-        try({
-            self.executionContext.execute(self)
-        })(catch: {
-            self.executionContext.reportFailure($0)
-        }) as Void
+        do {
+            try self.executionContext.execute(self)
+        }
+        catch {
+            self.executionContext.reportFailure(error)
+        }
     }
 }
 
@@ -525,24 +633,14 @@ private final class CallbackRunnable<T>: OnCompleteRunnable {
 
 class PromiseCompletingRunnable<T>: Runnable {
     
-    var promise: Promise<T>
-    
     private var runnableBody: () -> () = {}
     
     
-    init(future: Future<T>, body: () -> T) {
+    init(future: Future<T>, body: () throws -> T) {
         
-        self.promise = Promise(future: future)
-        
+        let promise = Promise(future: future)
         self.runnableBody = {
-            
-            let result: Result<T> = try({
-                return Result.success(body())
-            })(catch: {
-                return Result.failure($0)
-            })
-            
-            self.promise.complete(result)
+            try! promise.complete(Try(body))
         }
     }
     
@@ -604,12 +702,12 @@ a side effect.
 */
 private final class InternalCallbackExecutor: BatchingExecutor {
     
-    private override func unbatchedExecute(r: Runnable) {
-        r.run()
+    private override func unbatchedExecute(r: Runnable) throws {
+        try r.run()
     }
     
-    private override func reportFailure(cause: Error) {
-        throw(IllegalStateException("Problem in internal callback \(cause)"))
+    private override func reportFailure(cause: ErrorType) {
+        fatalError("Problem in internal callback \(cause)")
     }
 }
 

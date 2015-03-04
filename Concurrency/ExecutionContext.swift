@@ -11,23 +11,23 @@ import Dispatch
 
 
 public protocol Runnable {
-    func run()
+    func run() throws
 }
 
 
 public class DefaultRunnable: Runnable {
  
     
-    private let body: () -> ()
+    private let body: () throws -> ()
     
     
-    public init(body: () -> ()) {
+    public init(body: () throws -> ()) {
         self.body = body
     }
     
     
-    public func run() {
-        self.body()
+    public func run() throws {
+        try self.body()
     }
     
 }
@@ -43,17 +43,17 @@ public protocol ExecutionContext {
     /**
     Runs a block of code on this execution context.
     
-    :param: runnable the task to execute
+    - parameter runnable: the task to execute
     */
-    func execute(runnable: Runnable)
+    func execute(runnable: Runnable) throws
 
     
     /**
     Reports that an asynchronous computation failed.
     
-    :param: cause the cause of the failure
+    - parameter cause: the cause of the failure
     */
-    func reportFailure(cause: Error)
+    func reportFailure(cause: ErrorType)
     
     
     /**
@@ -69,7 +69,7 @@ public protocol ExecutionContext {
     
     Note: a valid implementation of `prepare` is one that simply returns `self`.
     
-    :returns: the prepared execution context
+    - returns: the prepared execution context
     */
     func prepare() -> ExecutionContext
 }
@@ -95,12 +95,12 @@ final class ExecutionContextImpl: ExecutionContext {
         }
         
         
-        final override func blockOn<T>(thunk: () -> T)(_ permission: CanAwait) -> T {
-            var result: T! = nil
+        final override func blockOn<T>(thunk: () throws -> T)(_ permission: CanAwait) throws -> T {
+            var result: Try<T>!
             dispatch_sync(self.queue, {
-                result = thunk()
+                result = Try(thunk)
             })
-            return result
+            return try result.get()
         }
     }
     
@@ -134,15 +134,15 @@ final class ExecutionContextImpl: ExecutionContext {
     
     
     
-    final func execute(runnable: Runnable) {
+    final func execute(runnable: Runnable) throws {
         dispatch_async(self.queue, {
-            runnable.run()
+            Try { try runnable.run() }
         })
     }
     
     
-    final func reportFailure(cause: Error) {
-        println(toString(cause))
+    final func reportFailure(cause: ErrorType) {
+        print(String(cause))
     }
     
     

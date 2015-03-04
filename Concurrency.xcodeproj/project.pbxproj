@@ -23,13 +23,12 @@
 		304A30FD1AA628E000E9A311 /* BatchingExecutor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 304A30FC1AA628E000E9A311 /* BatchingExecutor.swift */; };
 		30516FF51A9EB9FB008F95FF /* AtomicObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30516FF41A9EB9FB008F95FF /* AtomicObject.swift */; };
 		307E9C8E1A9C768600F8F85F /* ExecutionContextTetsts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 307E9C8D1A9C768600F8F85F /* ExecutionContextTetsts.swift */; };
-		308449F51A9D417B00EE7593 /* Exception.m in Sources */ = {isa = PBXBuildFile; fileRef = 308449F21A9D417B00EE7593 /* Exception.m */; };
-		308449F61A9D417B00EE7593 /* Exception.swift in Sources */ = {isa = PBXBuildFile; fileRef = 308449F41A9D417B00EE7593 /* Exception.swift */; };
+		308449F61A9D417B00EE7593 /* Error.swift in Sources */ = {isa = PBXBuildFile; fileRef = 308449F41A9D417B00EE7593 /* Error.swift */; };
 		308449F81A9D600C00EE7593 /* Future.swift in Sources */ = {isa = PBXBuildFile; fileRef = 308449F71A9D600C00EE7593 /* Future.swift */; };
 		308449FA1A9D601A00EE7593 /* Promise.swift in Sources */ = {isa = PBXBuildFile; fileRef = 308449F91A9D601A00EE7593 /* Promise.swift */; };
 		30B6E51A1A9ABD770059A2FD /* Memory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30B6E5191A9ABD770059A2FD /* Memory.swift */; };
 		30B6E51C1A9C3C540059A2FD /* ExecutionContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30B6E51B1A9C3C540059A2FD /* ExecutionContext.swift */; };
-		30CA97191A9C3E9C00DA05C2 /* Result.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30CA97181A9C3E9C00DA05C2 /* Result.swift */; };
+		30CA97191A9C3E9C00DA05C2 /* Try.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30CA97181A9C3E9C00DA05C2 /* Try.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -65,14 +64,12 @@
 		304A30FC1AA628E000E9A311 /* BatchingExecutor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BatchingExecutor.swift; sourceTree = "<group>"; };
 		30516FF41A9EB9FB008F95FF /* AtomicObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AtomicObject.swift; sourceTree = "<group>"; };
 		307E9C8D1A9C768600F8F85F /* ExecutionContextTetsts.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExecutionContextTetsts.swift; sourceTree = "<group>"; };
-		308449F21A9D417B00EE7593 /* Exception.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Exception.m; sourceTree = "<group>"; };
-		308449F31A9D417B00EE7593 /* Exception.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Exception.h; sourceTree = "<group>"; };
-		308449F41A9D417B00EE7593 /* Exception.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Exception.swift; sourceTree = "<group>"; };
+		308449F41A9D417B00EE7593 /* Error.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Error.swift; sourceTree = "<group>"; };
 		308449F71A9D600C00EE7593 /* Future.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Future.swift; sourceTree = "<group>"; };
 		308449F91A9D601A00EE7593 /* Promise.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Promise.swift; sourceTree = "<group>"; };
 		30B6E5191A9ABD770059A2FD /* Memory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Memory.swift; sourceTree = "<group>"; };
 		30B6E51B1A9C3C540059A2FD /* ExecutionContext.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExecutionContext.swift; sourceTree = "<group>"; };
-		30CA97181A9C3E9C00DA05C2 /* Result.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Result.swift; sourceTree = "<group>"; };
+		30CA97181A9C3E9C00DA05C2 /* Try.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Try.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -119,9 +116,7 @@
 				304A30FC1AA628E000E9A311 /* BatchingExecutor.swift */,
 				3042517B1A9AA85F000A44BA /* BlockContext.swift */,
 				3042517E1A9AA86C000A44BA /* Duration.swift */,
-				308449F41A9D417B00EE7593 /* Exception.swift */,
-				308449F31A9D417B00EE7593 /* Exception.h */,
-				308449F21A9D417B00EE7593 /* Exception.m */,
+				308449F41A9D417B00EE7593 /* Error.swift */,
 				30B6E51B1A9C3C540059A2FD /* ExecutionContext.swift */,
 				308449F71A9D600C00EE7593 /* Future.swift */,
 				304A30FA1AA6281C00E9A311 /* LinkedList.swift */,
@@ -130,7 +125,7 @@
 				304251821A9AA874000A44BA /* Memory.m */,
 				308449F91A9D601A00EE7593 /* Promise.swift */,
 				3042518A1A9AABB1000A44BA /* QueueLocal.swift */,
-				30CA97181A9C3E9C00DA05C2 /* Result.swift */,
+				30CA97181A9C3E9C00DA05C2 /* Try.swift */,
 				304251831A9AA874000A44BA /* ThreadLocal.swift */,
 				304251581A9AA80A000A44BA /* Supporting Files */,
 				304251801A9AA874000A44BA /* Concurrency-Bridging-Header.h */,
@@ -221,7 +216,8 @@
 		3042514D1A9AA80A000A44BA /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0630;
+				LastSwiftUpdateCheck = 0700;
+				LastUpgradeCheck = 0700;
 				ORGANIZATIONNAME = "Peter Zhivkov.";
 				TargetAttributes = {
 					304251541A9AA80A000A44BA = {
@@ -280,7 +276,6 @@
 				304A30FD1AA628E000E9A311 /* BatchingExecutor.swift in Sources */,
 				30B6E51A1A9ABD770059A2FD /* Memory.swift in Sources */,
 				30516FF51A9EB9FB008F95FF /* AtomicObject.swift in Sources */,
-				308449F51A9D417B00EE7593 /* Exception.m in Sources */,
 				308449FA1A9D601A00EE7593 /* Promise.swift in Sources */,
 				3042517F1A9AA86C000A44BA /* Duration.swift in Sources */,
 				3042515D1A9AA80A000A44BA /* ViewController.swift in Sources */,
@@ -290,11 +285,11 @@
 				3042515B1A9AA80A000A44BA /* AppDelegate.swift in Sources */,
 				30B6E51C1A9C3C540059A2FD /* ExecutionContext.swift in Sources */,
 				308449F81A9D600C00EE7593 /* Future.swift in Sources */,
-				308449F61A9D417B00EE7593 /* Exception.swift in Sources */,
+				308449F61A9D417B00EE7593 /* Error.swift in Sources */,
 				3042517C1A9AA85F000A44BA /* Awaitable.swift in Sources */,
 				304251851A9AA874000A44BA /* ThreadLocal.swift in Sources */,
 				304251841A9AA874000A44BA /* Memory.m in Sources */,
-				30CA97191A9C3E9C00DA05C2 /* Result.swift in Sources */,
+				30CA97191A9C3E9C00DA05C2 /* Try.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -358,6 +353,7 @@
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -372,7 +368,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -410,7 +406,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -425,6 +421,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				INFOPLIST_FILE = Concurrency/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.pzhivkov.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "Concurrency/Concurrency-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -438,6 +435,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				INFOPLIST_FILE = Concurrency/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.pzhivkov.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "Concurrency/Concurrency-Bridging-Header.h";
 			};
@@ -458,6 +456,7 @@
 				);
 				INFOPLIST_FILE = ConcurrencyTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.pzhivkov.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -476,6 +475,7 @@
 				);
 				INFOPLIST_FILE = ConcurrencyTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.pzhivkov.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Concurrency.app/Concurrency";

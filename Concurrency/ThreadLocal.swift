@@ -29,13 +29,13 @@ public class ThreadLocal<T> {
 
         // Since Swift initializers are guaranteed to be idempotent, there is no need
         // to use pthread_once() here for the key creation.
-        ret = pthread_key_create(&key, mem_destructorFunc(type: T.self))
+        ret = pthread_key_create(&key, mem_destructorFunc(T.self))
         if ret != 0 {
             switch ret {
             case EAGAIN:
-                debugPrintln("Can't create key for thread-local storage due to lack of resources or too many keys.")
+                debugPrint("Can't create key for thread-local storage due to lack of resources or too many keys.")
             case ENOMEM:
-                debugPrintln("Not enough memory to create key for thread-local storage.")
+                debugPrint("Not enough memory to create key for thread-local storage.")
             default:
                 break
             }
@@ -47,7 +47,7 @@ public class ThreadLocal<T> {
     deinit {
         let ret = pthread_key_delete(key)
         if ret == EINVAL {
-            debugPrintln("Attempted to delete an invalid key (\(key)) for thread-local storage.")
+            debugPrint("Attempted to delete an invalid key (\(key)) for thread-local storage.")
         }
     }
     
@@ -60,7 +60,7 @@ public class ThreadLocal<T> {
     /**
     Get the value in the thread-local storage.
     
-    :returns: The thread-local value.
+    - returns: The thread-local value.
     */
     public func get() -> T? {
         let ptr = UnsafeMutablePointer<T>(pthread_getspecific(key))
@@ -75,7 +75,7 @@ public class ThreadLocal<T> {
     /**
     Set a value in the thread-local storage.
     
-    :param: value The new value to be set for the current thread.
+    - parameter value: The new value to be set for the current thread.
     */
     public func set(value: T?) {
         var ptr = UnsafeMutablePointer<T>(pthread_getspecific(key))
@@ -90,9 +90,9 @@ public class ThreadLocal<T> {
         let ret = pthread_setspecific(key, ptr)
         switch ret {
         case ENOMEM:
-            debugPrintln("Insufficient memory to look up thread-local storage for key \(key).")
+            debugPrint("Insufficient memory to look up thread-local storage for key \(key).")
         case EINVAL:
-            debugPrintln("Attemped to look up thread-local storage for invalid key \(key).")
+            debugPrint("Attemped to look up thread-local storage for invalid key \(key).")
         default:
             break
         }
