@@ -14,7 +14,13 @@ import Dispatch
 public class Future<T>: Awaitable {
     
     
-    private let internalExecutionContext = defaultExecutionContext
+    /**
+    The executor within the lexical scope of the Future. Note that this will
+    (modulo bugs) _never_ execute a callback other than those below in this same file.
+    
+    See the documentation on `InternalCallbackExecutor` for more details.
+    */
+    private let internalExecutionContext = InternalCallbackExecutor()
     
     
     
@@ -24,7 +30,7 @@ public class Future<T>: Awaitable {
     
     internal init() {
         // The future is incomplete and has no callbacks.
-        self.state.update(nil, newValue: LinkedNode<CallbackRunnable<T>>())
+        self.state.update(nil, newValue: ListNode<CallbackRunnable<T>>())
     }
     
     
@@ -311,9 +317,9 @@ public class Future<T>: Awaitable {
     Called by `tryComplete` to store the resolved value and get the list of
     listeners, or `nil` if it is already completed.
     */
-    private func tryCompleteAndGetListeners(value: Result<T>) -> LinkedNode<CallbackRunnable<T>>? {
+    private func tryCompleteAndGetListeners(value: Result<T>) -> ListNode<CallbackRunnable<T>>? {
         switch self.state.get() {
-        case let listeners as LinkedNode<CallbackRunnable<T>>:
+        case let listeners as ListNode<CallbackRunnable<T>>:
             if self.state.update(listeners, newValue: Box(value)) {
                 return listeners
             } else {
@@ -342,8 +348,8 @@ public class Future<T>: Awaitable {
         case is Future<T>:
             self.compressedRoot.dispatchOrAddCallback(runnable)
             
-        case let listeners as LinkedNode<CallbackRunnable<T>>:
-            let newListeners = LinkedNode(runnable)
+        case let listeners as ListNode<CallbackRunnable<T>>:
+            let newListeners = ListNode(runnable)
             newListeners.next = listeners
             if self.state.update(listeners, newValue: newListeners) {
                 return
@@ -389,9 +395,9 @@ public class Future<T>: Awaitable {
             case is Future<T>:
                 self.compressedRoot.link(target)
                 
-            case let listeners as LinkedNode<CallbackRunnable<T>>:
+            case let listeners as ListNode<CallbackRunnable<T>>:
                 if self.state.update(listeners, newValue: target) {
-                    for var node: LinkedNode<CallbackRunnable<T>>? = listeners; node?.data != nil; node = node?.next {
+                    for var node: ListNode<CallbackRunnable<T>>? = listeners; node?.data != nil; node = node?.next {
                         if let callbackRunnable = node?.data {
                             target.dispatchOrAddCallback(callbackRunnable)
                         }
@@ -575,18 +581,38 @@ private final class CompletionLatch {
 
 // MARK: -
 
-private final class LinkedNode<T> {
+/**
+This is used to run callbacks which are internal
+to this library; our own callbacks are only
+ever used to eventually run another callback,
+and that other callback will have its own
+executor because all callbacks come with
+an executor. Our own callbacks never block
+and have no "expected" exceptions.
+As a result, this executor can do nothing;
+some other executor will always come after
+it (and sometimes one will be before it),
+and those will be performing the "real"
+dispatch to code outside scala.concurrent.
+Because this exists, ExecutionContext.defaultExecutionContext
+isn't instantiated by Future internals, so
+if some code for some reason wants to avoid
+ever starting up the default context, it can do so
+by just not ever using it itself. scala.concurrent
+doesn't need to create defaultExecutionContext as
+a side effect.
+*/
+private final class InternalCallbackExecutor: BatchingExecutor {
     
-    var data: T?
+    private override func unbatchedExecute(r: Runnable) {
+        r.run()
+    }
     
-    var next: LinkedNode<T>?
-    
-    
-    init() {} // Empty list.
-    
-    init(_ data: T) {
-        self.data = data
+    private override func reportFailure(cause: Error) {
+        throw(IllegalStateException("Problem in internal callback \(cause)"))
     }
 }
+
+
 
 

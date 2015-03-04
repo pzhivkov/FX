@@ -62,7 +62,7 @@ public class BlockContext {
     
     :returns: return value from the `body`
     */
-    public class func withBlockContext<T>(blockContext: BlockContext)(body: () -> T) -> T {
+    public class func withBlockContext<T>(blockContext: BlockContext)(_ body: () -> T) -> T {
         let old = BlockContext.threadLocalContext.get() // Can be nil.
         return try({
             BlockContext.threadLocalContext.set(blockContext)
