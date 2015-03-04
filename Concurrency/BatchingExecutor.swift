@@ -34,19 +34,19 @@ in the calling thread synchronously. It must enqueue/handoff the Runnable.
 internal class BatchingExecutor: ExecutionContext {
     
     // Invariant: If "tasksLocal.get() != nil" then we are inside Batch.run(); if it is nil, we are outside.
-    private let tasksLocal = ThreadLocal<ListNode<Runnable>>()
+    private let tasksLocal = ThreadLocal<LinkedList<Runnable>>()
     
 
     private class Batch: BlockContext, Runnable {
      
         private var parentBlockContext: BlockContext!
         
-        private let initial: ListNode<Runnable>
+        private let initial: LinkedList<Runnable>
         
         private let executor: BatchingExecutor
         
         
-        init(initial: ListNode<Runnable>, executor: BatchingExecutor) {
+        init(initial: LinkedList<Runnable>, executor: BatchingExecutor) {
             self.initial = initial
             self.executor = executor
             super.init()
@@ -66,29 +66,26 @@ internal class BatchingExecutor: ExecutionContext {
                 try({ () -> Void in
                     self.parentBlockContext = prevBlockContext
                     
-                    var processBatch: (ListNode<Runnable> -> Void)!
-            
-                    processBatch = { (batch: ListNode<Runnable>) -> Void in
-                        if let head = batch.data {
-                            self.executor.tasksLocal.set(batch.next)
-                            try({
-                                head.run()
-                            })(catch: {
-                                // If one task throws, move the
-                                // remaining tasks to another thread
-                                // so we can throw the exception
-                                // up to the invoking executor.
-                                let remaining = self.executor.tasksLocal.get()!
-                                self.executor.tasksLocal.set(nil)
-                                let batch = Batch(initial: remaining, executor: self.executor)
-                                self.executor.unbatchedExecute(batch)
-                                throw($0)
-                            }) as Void
-                            processBatch(self.executor.tasksLocal.get()!) // Since head.run() can add entries, always do tasksLocal.get here.
-                        }
+                    var batch = self.initial
+                    while let head = batch.data {
+                        self.executor.tasksLocal.set(batch.next)
+                        try({
+                            head.run()
+                        })(catch: {
+                            // If one task throws, move the
+                            // remaining tasks to another thread
+                            // so we can throw the exception
+                            // up to the invoking executor.
+                            let remaining = self.executor.tasksLocal.get()!
+                            self.executor.tasksLocal.set(nil)
+                            let batch = Batch(initial: remaining, executor: self.executor)
+                            self.executor.unbatchedExecute(batch)
+                            throw($0)
+                        }) as Void
+                        batch = self.executor.tasksLocal.get()! // Since head.run() can add entries, always do tasksLocal.get here.
                     }
-                        
-                    processBatch(self.initial)
+                    
+
                 })(finally: { () -> Void in
                     self.executor.tasksLocal.set(nil)
                     self.parentBlockContext = nil
@@ -129,8 +126,8 @@ internal class BatchingExecutor: ExecutionContext {
     
     func execute(runnable: Runnable) {
         if isBatchable(runnable) {
-            let nilNode = ListNode<Runnable>()
-            let runNode = ListNode(runnable)
+            let nilNode = LinkedList<Runnable>()
+            let runNode = LinkedList(runnable)
             runNode.next = nilNode
             
             switch self.tasksLocal.get() {

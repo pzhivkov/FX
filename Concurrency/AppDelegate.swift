@@ -34,7 +34,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 let value = i + 10 + $0.get()
                 
                 blocking { () -> Void in
-                    sleep(UInt32(i))
+                    //sleep(UInt32(i))
                     print("\(i) \(value)\n")
                 }
             }

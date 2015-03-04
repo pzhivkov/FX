@@ -1,5 +1,5 @@
 //
-//  ListNode.swift
+//  LinkedList
 //  Concurrency
 //
 //  Created by Peter Zhivkov on 03/03/2015.
@@ -12,11 +12,11 @@
 /**
 Define this a class so that it has reference semantics and so that it can participate in atomic updates.
 */
-internal final class ListNode<T> {
+internal final class LinkedList<T> {
     
     var data: T?
     
-    var next: ListNode<T>?
+    var next: LinkedList<T>?
     
     
     init() {} // Empty list.

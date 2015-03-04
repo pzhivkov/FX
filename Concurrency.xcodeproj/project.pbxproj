@@ -19,7 +19,7 @@
 		304251851A9AA874000A44BA /* ThreadLocal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 304251831A9AA874000A44BA /* ThreadLocal.swift */; };
 		304251891A9AA8C4000A44BA /* ThreadLocalTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 304251881A9AA8C4000A44BA /* ThreadLocalTests.swift */; };
 		3042518B1A9AABB1000A44BA /* QueueLocal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3042518A1A9AABB1000A44BA /* QueueLocal.swift */; };
-		304A30FB1AA6281C00E9A311 /* ListNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 304A30FA1AA6281C00E9A311 /* ListNode.swift */; };
+		304A30FB1AA6281C00E9A311 /* LinkedList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 304A30FA1AA6281C00E9A311 /* LinkedList.swift */; };
 		304A30FD1AA628E000E9A311 /* BatchingExecutor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 304A30FC1AA628E000E9A311 /* BatchingExecutor.swift */; };
 		30516FF51A9EB9FB008F95FF /* AtomicObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30516FF41A9EB9FB008F95FF /* AtomicObject.swift */; };
 		307E9C8E1A9C768600F8F85F /* ExecutionContextTetsts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 307E9C8D1A9C768600F8F85F /* ExecutionContextTetsts.swift */; };
@@ -61,7 +61,7 @@
 		304251831A9AA874000A44BA /* ThreadLocal.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ThreadLocal.swift; sourceTree = "<group>"; };
 		304251881A9AA8C4000A44BA /* ThreadLocalTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ThreadLocalTests.swift; sourceTree = "<group>"; };
 		3042518A1A9AABB1000A44BA /* QueueLocal.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QueueLocal.swift; sourceTree = "<group>"; };
-		304A30FA1AA6281C00E9A311 /* ListNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ListNode.swift; sourceTree = "<group>"; };
+		304A30FA1AA6281C00E9A311 /* LinkedList.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LinkedList.swift; sourceTree = "<group>"; };
 		304A30FC1AA628E000E9A311 /* BatchingExecutor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BatchingExecutor.swift; sourceTree = "<group>"; };
 		30516FF41A9EB9FB008F95FF /* AtomicObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AtomicObject.swift; sourceTree = "<group>"; };
 		307E9C8D1A9C768600F8F85F /* ExecutionContextTetsts.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExecutionContextTetsts.swift; sourceTree = "<group>"; };
@@ -124,7 +124,7 @@
 				308449F21A9D417B00EE7593 /* Exception.m */,
 				30B6E51B1A9C3C540059A2FD /* ExecutionContext.swift */,
 				308449F71A9D600C00EE7593 /* Future.swift */,
-				304A30FA1AA6281C00E9A311 /* ListNode.swift */,
+				304A30FA1AA6281C00E9A311 /* LinkedList.swift */,
 				30B6E5191A9ABD770059A2FD /* Memory.swift */,
 				304251811A9AA874000A44BA /* Memory.h */,
 				304251821A9AA874000A44BA /* Memory.m */,
@@ -286,7 +286,7 @@
 				3042515D1A9AA80A000A44BA /* ViewController.swift in Sources */,
 				3042517D1A9AA85F000A44BA /* BlockContext.swift in Sources */,
 				3042518B1A9AABB1000A44BA /* QueueLocal.swift in Sources */,
-				304A30FB1AA6281C00E9A311 /* ListNode.swift in Sources */,
+				304A30FB1AA6281C00E9A311 /* LinkedList.swift in Sources */,
 				3042515B1A9AA80A000A44BA /* AppDelegate.swift in Sources */,
 				30B6E51C1A9C3C540059A2FD /* ExecutionContext.swift in Sources */,
 				308449F81A9D600C00EE7593 /* Future.swift in Sources */,

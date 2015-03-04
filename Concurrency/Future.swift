@@ -30,7 +30,7 @@ public class Future<T>: Awaitable {
     
     internal init() {
         // The future is incomplete and has no callbacks.
-        self.state.update(nil, newValue: ListNode<CallbackRunnable<T>>())
+        self.state.update(nil, newValue: LinkedList<CallbackRunnable<T>>())
     }
     
     
@@ -317,9 +317,9 @@ public class Future<T>: Awaitable {
     Called by `tryComplete` to store the resolved value and get the list of
     listeners, or `nil` if it is already completed.
     */
-    private func tryCompleteAndGetListeners(value: Result<T>) -> ListNode<CallbackRunnable<T>>? {
+    private func tryCompleteAndGetListeners(value: Result<T>) -> LinkedList<CallbackRunnable<T>>? {
         switch self.state.get() {
-        case let listeners as ListNode<CallbackRunnable<T>>:
+        case let listeners as LinkedList<CallbackRunnable<T>>:
             if self.state.update(listeners, newValue: Box(value)) {
                 return listeners
             } else {
@@ -348,8 +348,8 @@ public class Future<T>: Awaitable {
         case is Future<T>:
             self.compressedRoot.dispatchOrAddCallback(runnable)
             
-        case let listeners as ListNode<CallbackRunnable<T>>:
-            let newListeners = ListNode(runnable)
+        case let listeners as LinkedList<CallbackRunnable<T>>:
+            let newListeners = LinkedList(runnable)
             newListeners.next = listeners
             if self.state.update(listeners, newValue: newListeners) {
                 return
@@ -395,9 +395,9 @@ public class Future<T>: Awaitable {
             case is Future<T>:
                 self.compressedRoot.link(target)
                 
-            case let listeners as ListNode<CallbackRunnable<T>>:
+            case let listeners as LinkedList<CallbackRunnable<T>>:
                 if self.state.update(listeners, newValue: target) {
-                    for var node: ListNode<CallbackRunnable<T>>? = listeners; node?.data != nil; node = node?.next {
+                    for var node: LinkedList<CallbackRunnable<T>>? = listeners; node?.data != nil; node = node?.next {
                         if let callbackRunnable = node?.data {
                             target.dispatchOrAddCallback(callbackRunnable)
                         }
