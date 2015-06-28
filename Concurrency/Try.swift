@@ -8,6 +8,14 @@
 
 
 
+public protocol TryType {
+    typealias T
+    
+    func get() throws -> T
+}
+
+
+
 /**
 The `Try` type represents a computation that may either result in an exception, or return a
 successfully computed value.
@@ -21,7 +29,7 @@ upon by the next combinator in the chain, or the exception wrapped in the `Failu
 passed on down the chain. Combinators such as `recover` and `recoverWith` are designed to provide some type of
 default behavior in the case of failure.
 */
-public enum Try<T>: CustomStringConvertible, CustomDebugStringConvertible {
+public enum Try<T>: TryType, CustomStringConvertible, CustomDebugStringConvertible {
   
     case Success(T)
     
@@ -285,6 +293,23 @@ public enum Try<T>: CustomStringConvertible, CustomDebugStringConvertible {
     
     public var debugDescription: String {
         return description
+    }
+    
+}
+
+
+
+extension TryType where T: TryType {
+    
+    /**
+    Transforms a nested `Try`, ie, a `Try` of type `Try<Try<T>>`, into an un-nested `Try`, ie, a `Try` of type `Try<T>`.
+    */
+    public func flatten() -> T {
+        do {
+            return try get()
+        } catch {
+            return Try { error } as! Self.T
+        }
     }
     
 }

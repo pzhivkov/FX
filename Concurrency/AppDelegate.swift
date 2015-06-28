@@ -14,9 +14,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
 
 
-    func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
-        // Override point for customization after application launch.
-        
+    func trial() -> Try<Int> {
+        let gaa = Try<Int> {
+            //throw Error.IllegalState("A")
+            return 5
+        }
+
+        return gaa
+    }
+    
+    func test() {
+
         let p = Future<Int> {
             print("10\n", appendNewline: false)
             sleep(UInt32(4))
@@ -25,7 +33,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
         
         //println("Future returned \(Await.result(p, atMost: 5.seconds))")
-        
         
         for i in 1..<10 {
             p.onComplete {
@@ -41,6 +48,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 }
             }
         }
+    }
+
+
+    func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
+        // Override point for customization after application launch.
+        
+        print("\(trial())")
+        
+        test()
+   
         return true
     }
 
