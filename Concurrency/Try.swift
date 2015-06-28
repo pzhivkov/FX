@@ -21,7 +21,7 @@ upon by the next combinator in the chain, or the exception wrapped in the `Failu
 passed on down the chain. Combinators such as `recover` and `recoverWith` are designed to provide some type of
 default behavior in the case of failure.
 */
-public enum Try<T> {
+public enum Try<T>: CustomStringConvertible, CustomDebugStringConvertible {
   
     case Success(T)
     
@@ -39,6 +39,10 @@ public enum Try<T> {
         } catch {
             self = .Failure(error)
         }
+    }
+    
+    public init(@noescape _ body: () -> T) {
+        self = .Success(body())
     }
     
     
@@ -257,6 +261,32 @@ public enum Try<T> {
             return .Failure(error)
         }
     }
+    
+    
+    
+    // MARK: - CustomStringConvertible
+    
+    
+    
+    public var description: String {
+        switch self {
+        case let .Success(value):
+            return "Try.Success(\(value))"
+        case let .Failure(error):
+            return "Try.Failure(\(error))"
+        }
+    }
+    
+    
+    
+    // MARK: - CustomDebugStringConvertible
+    
+    
+    
+    public var debugDescription: String {
+        return description
+    }
+    
 }
 
 

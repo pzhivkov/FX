@@ -102,6 +102,14 @@ final class ExecutionContextImpl: ExecutionContext {
             })
             return try result.get()
         }
+        
+        final override func blockOn<T>(thunk: () -> T)(_ permission: CanAwait) -> T {
+            var result: T?
+            dispatch_sync(self.queue, {
+                result = thunk()
+            })
+            return result!
+        }
     }
     
     

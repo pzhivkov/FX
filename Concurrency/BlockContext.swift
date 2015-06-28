@@ -28,6 +28,10 @@ public class BlockContext {
         fatalError("This method must be overridden.")
     }
     
+    public func blockOn<T>(thunk: () -> T)(_ permission: CanAwait) -> T {
+        fatalError("This method must be overridden.")
+    }
+    
     
     
     // MARK: - Class variables and methods
@@ -38,17 +42,21 @@ public class BlockContext {
         private final override func blockOn<T>(thunk: () throws -> T)(_ permission: CanAwait) throws -> T {
             return try thunk()
         }
+        
+        private final override func blockOn<T>(thunk: () -> T)(_ permission: CanAwait) -> T {
+            return thunk()
+        }
     }
     
     private static let defaultBlockContext = DefaultBlockContext()
 
     private static let threadLocalContext = ThreadLocal<BlockContext>()
     
-    public static let queueLocalContext = QueueLocal<BlockContext>()
+    internal static let queueLocalContext = QueueLocal<BlockContext>()
     
     
     /// Obtain the current thread's current `BlockContext`
-    public static var current: BlockContext {
+    internal static var current: BlockContext {
         return threadLocalContext.get()
             ?? queueLocalContext.get()
             ?? defaultBlockContext
@@ -62,7 +70,7 @@ public class BlockContext {
     
     - returns: return value from the `body`
     */
-    public class func withBlockContext<T>(blockContext: BlockContext)(_ body: () throws -> T) throws -> T {
+    internal class func withBlockContext<T>(blockContext: BlockContext)(_ body: () throws -> T) throws -> T {
         let old = BlockContext.threadLocalContext.get() // Can be nil.
         BlockContext.threadLocalContext.set(blockContext)
         defer {
@@ -88,6 +96,10 @@ Blocking on an `Awaitable` should be done using `Await.result` instead of `block
 */
 public func blocking<T>(body: () throws -> T) throws -> T {
     return try BlockContext.current.blockOn(body)(awaitPermission)
+}
+
+public func blocking<T>(body: () -> T) -> T {
+    return BlockContext.current.blockOn(body)(awaitPermission)
 }
 
 

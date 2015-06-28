@@ -47,7 +47,7 @@ class ExecutionContextTetsts: XCTestCase {
             
             XCTAssert(i == 1, "Execution failure")
             
-            let res = try! blocking({() -> Int in
+            let res = blocking({() -> Int in
                 sleep(1)
                 return i++
             })

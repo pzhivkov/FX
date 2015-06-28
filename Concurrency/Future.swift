@@ -10,13 +10,6 @@ import Dispatch
 
 
 
-private class Box<T> {
-    let unbox: T
-    init(_ value: T) { self.unbox = value }
-}
-
-
-
 public class Future<T>: Awaitable {
     
     
@@ -70,7 +63,7 @@ public class Future<T>: Awaitable {
         })
     }
     
-    public final func onSuccess(body: T -> Void) {
+    public final func onSuccess(body: T throws -> Void) {
         return self.onSuccess()(body)
     }
     
@@ -95,7 +88,7 @@ public class Future<T>: Awaitable {
         })
     }
     
-    public final func onFailure(body: ErrorType -> Void) {
+    public final func onFailure(body: ErrorType throws -> Void) {
         return self.onFailure()(body)
     }
     
@@ -113,7 +106,7 @@ public class Future<T>: Awaitable {
         self.dispatchOrAddCallback(runnable)
     }
     
-    public final func onComplete(body: Try<T> -> Void) {
+    public final func onComplete(body: Try<T> throws -> Void) {
         self.onComplete()(body)
     }
 
