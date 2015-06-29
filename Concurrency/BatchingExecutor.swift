@@ -94,7 +94,7 @@ internal class BatchingExecutor: ExecutionContext {
         }
         
         
-        private override func blockOn<T>(thunk: () throws -> T)(_ permission: CanAwait) throws -> T {
+        private final override func blockOn<T>(thunk: () throws -> T)(_ permission: CanAwait) throws -> T {
              // If we know there will be blocking, we don't want to keep tasks queued up because it could deadlock.
             let tasks = self.executor.tasksLocal.get()
             self.executor.tasksLocal.set(nil)
@@ -105,6 +105,10 @@ internal class BatchingExecutor: ExecutionContext {
             // Now delegate the blocking to the previous BC.
             precondition(self.parentBlockContext != nil)
             return try self.parentBlockContext!.blockOn(thunk)(permission)
+        }
+        
+        private final override func blockOn<T>(thunk: () -> T)(_ permission: CanAwait) -> T {
+            return try! blockOn({ () throws -> T in thunk() })(permission)
         }
     }
     

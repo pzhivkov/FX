@@ -12,7 +12,7 @@ import UIKit
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
-
+/*
 
     func trial() -> Try<Int> {
         let gaa = Try<Int> {
@@ -22,7 +22,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
         return gaa
     }
-    
+  */
     func test() {
 
         let p = Future<Int> {
@@ -54,7 +54,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
         // Override point for customization after application launch.
         
-        print("\(trial())")
+        //print("\(trial())")
         
         test()
    
