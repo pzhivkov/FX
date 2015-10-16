@@ -551,7 +551,7 @@ internal final class CompletedFuture<T>: Future<T> {
         CallbackRunnable(executionContext: executionContext.prepare(), onComplete: body).execute(completedValue)
     }
     
-    override func ready(atMost: Duration)(_ permit: CanAwait) -> Self {
+    override func ready(atMost: Duration)(_ permit: CanAwait) throws -> Self {
         return self
     }
     

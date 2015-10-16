@@ -26,7 +26,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func test() {
 
         let p = Future<Int> {
-            print("10\n", appendNewline: false)
+            print("10\n", terminator: "")
             sleep(UInt32(4))
             //throw Error.IllegalState("Bad state")
             return 10
@@ -44,7 +44,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 
                 blocking { () -> Void in
                     sleep(UInt32(i))
-                    print("\(i) \(value)\n", appendNewline: false)
+                    print("\(i) \(value)\n", terminator: "")
                 }
             }
         }

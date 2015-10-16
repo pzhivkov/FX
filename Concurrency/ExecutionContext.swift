@@ -81,7 +81,7 @@ public protocol ExecutionContext {
 final class ExecutionContextImpl: ExecutionContext {
     
     private var label: String! = nil
-    private var queue = dispatch_queue_t()
+    private var queue: dispatch_queue_t
     
     
     
@@ -119,6 +119,8 @@ final class ExecutionContextImpl: ExecutionContext {
     
     
     init() {
+        self.queue = dispatch_get_main_queue()
+        
         let uniqueid = Unmanaged<AnyObject>.passUnretained(self).toOpaque()
         self.label = "com.pzhivkov.concurrency.queue\(uniqueid)"
         
