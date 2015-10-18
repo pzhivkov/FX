@@ -10,7 +10,7 @@
 		30456A861BD0887900282131 /* FX.h in Headers */ = {isa = PBXBuildFile; fileRef = 30456A851BD0887900282131 /* FX.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		30456A8D1BD0887900282131 /* FX.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30456A821BD0887900282131 /* FX.framework */; settings = {ASSET_TAGS = (); }; };
 		30456A921BD0887900282131 /* FXTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30456A911BD0887900282131 /* FXTests.swift */; };
-		30456AB21BD0899F00282131 /* AtomicObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30456A9D1BD0899F00282131 /* AtomicObject.swift */; settings = {ASSET_TAGS = (); }; };
+		30456AB21BD0899F00282131 /* AtomicReference.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30456A9D1BD0899F00282131 /* AtomicReference.swift */; settings = {ASSET_TAGS = (); }; };
 		30456AB31BD0899F00282131 /* Awaitable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30456A9E1BD0899F00282131 /* Awaitable.swift */; settings = {ASSET_TAGS = (); }; };
 		30456AB41BD0899F00282131 /* BatchingExecutor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30456A9F1BD0899F00282131 /* BatchingExecutor.swift */; settings = {ASSET_TAGS = (); }; };
 		30456AB51BD0899F00282131 /* BlockContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30456AA01BD0899F00282131 /* BlockContext.swift */; settings = {ASSET_TAGS = (); }; };
@@ -29,6 +29,7 @@
 		30456AC41BD0899F00282131 /* Try.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30456AAF1BD0899F00282131 /* Try.swift */; settings = {ASSET_TAGS = (); }; };
 		30456AC91BD089D300282131 /* ExecutionContextTetsts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30456AC61BD089D300282131 /* ExecutionContextTetsts.swift */; settings = {ASSET_TAGS = (); }; };
 		30456ACB1BD089D300282131 /* ThreadLocalTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30456AC81BD089D300282131 /* ThreadLocalTests.swift */; settings = {ASSET_TAGS = (); }; };
+		3077D23C1BD421EE008EE358 /* FutureTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3077D23B1BD421EE008EE358 /* FutureTests.swift */; settings = {ASSET_TAGS = (); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -48,7 +49,7 @@
 		30456A8C1BD0887900282131 /* FXTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FXTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		30456A911BD0887900282131 /* FXTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FXTests.swift; sourceTree = "<group>"; };
 		30456A931BD0887900282131 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		30456A9D1BD0899F00282131 /* AtomicObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AtomicObject.swift; sourceTree = "<group>"; };
+		30456A9D1BD0899F00282131 /* AtomicReference.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AtomicReference.swift; sourceTree = "<group>"; };
 		30456A9E1BD0899F00282131 /* Awaitable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Awaitable.swift; sourceTree = "<group>"; };
 		30456A9F1BD0899F00282131 /* BatchingExecutor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BatchingExecutor.swift; sourceTree = "<group>"; };
 		30456AA01BD0899F00282131 /* BlockContext.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BlockContext.swift; sourceTree = "<group>"; };
@@ -67,6 +68,7 @@
 		30456AAF1BD0899F00282131 /* Try.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Try.swift; sourceTree = "<group>"; };
 		30456AC61BD089D300282131 /* ExecutionContextTetsts.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExecutionContextTetsts.swift; sourceTree = "<group>"; };
 		30456AC81BD089D300282131 /* ThreadLocalTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ThreadLocalTests.swift; sourceTree = "<group>"; };
+		3077D23B1BD421EE008EE358 /* FutureTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FutureTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -109,7 +111,7 @@
 		30456A841BD0887900282131 /* FX */ = {
 			isa = PBXGroup;
 			children = (
-				30456A9D1BD0899F00282131 /* AtomicObject.swift */,
+				30456A9D1BD0899F00282131 /* AtomicReference.swift */,
 				30456A9E1BD0899F00282131 /* Awaitable.swift */,
 				30456A9F1BD0899F00282131 /* BatchingExecutor.swift */,
 				30456AA01BD0899F00282131 /* BlockContext.swift */,
@@ -137,6 +139,7 @@
 			children = (
 				30456A911BD0887900282131 /* FXTests.swift */,
 				30456AC61BD089D300282131 /* ExecutionContextTetsts.swift */,
+				3077D23B1BD421EE008EE358 /* FutureTests.swift */,
 				30456AC81BD089D300282131 /* ThreadLocalTests.swift */,
 				30456A931BD0887900282131 /* Info.plist */,
 			);
@@ -254,7 +257,7 @@
 			files = (
 				30456AB81BD0899F00282131 /* Error.swift in Sources */,
 				30456AB41BD0899F00282131 /* BatchingExecutor.swift in Sources */,
-				30456AB21BD0899F00282131 /* AtomicObject.swift in Sources */,
+				30456AB21BD0899F00282131 /* AtomicReference.swift in Sources */,
 				30456ABF1BD0899F00282131 /* Memory.m in Sources */,
 				30456AB61BD0899F00282131 /* Box.swift in Sources */,
 				30456AB71BD0899F00282131 /* Duration.swift in Sources */,
@@ -277,6 +280,7 @@
 			files = (
 				30456A921BD0887900282131 /* FXTests.swift in Sources */,
 				30456AC91BD089D300282131 /* ExecutionContextTetsts.swift in Sources */,
+				3077D23C1BD421EE008EE358 /* FutureTests.swift in Sources */,
 				30456ACB1BD089D300282131 /* ThreadLocalTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

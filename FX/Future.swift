@@ -214,7 +214,7 @@ public class Future<T>: Awaitable {
     this future. If this future is completed with an error then the new
     future will also contain this error.
     */
-    func map<S>(executionContext: ExecutionContext = defaultExecutionContext)(_ f: T -> S) -> Future<S> {
+    func map<S>(executionContext: ExecutionContext = defaultExecutionContext)(_ f: T throws -> S) -> Future<S> {
         let p = Promise<S>()
         self.onComplete(executionContext)({
             try! p.complete($0.map(f))
@@ -255,6 +255,30 @@ public class Future<T>: Awaitable {
     
     func flatMap<S>(f: T -> Future<S>) -> Future<S> {
         return flatMap()(f)
+    }
+    
+
+    /**
+    Creates a new future by filtering the value of the current future with a predicate.
+    
+    If the current future contains a value which satisfies the predicate, the new future will also hold that value.
+    Otherwise, the resulting future will fail with a `NoSuchElement` rrror.
+    
+    If the current future fails, then the resulting future also fails.
+    */
+    func filter(executionContext: ExecutionContext = defaultExecutionContext)(_ p: T -> Bool) -> Future<T> {
+        return map(executionContext)({
+            if p($0) {
+                return $0
+            }
+            else {
+                throw Error.NoSuchElement("Future.filter predicate is not satisfied")
+            }
+        })
+    }
+    
+    func filter(p: T -> Bool) -> Future<T> {
+        return filter()(p)
     }
     
     
@@ -337,7 +361,7 @@ public class Future<T>: Awaitable {
     Default future implementation
     */
     
-    private var state = AtomicObject<AnyObject>()
+    private var state = AtomicReference<AnyObject>()
     
     
     /**

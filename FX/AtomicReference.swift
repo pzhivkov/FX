@@ -1,5 +1,5 @@
 //
-//  AtomicObject.swift
+//  AtomicReference.swift
 //  FX
 //
 //  Created by Peter Zhivkov on 25/02/2015.
@@ -10,7 +10,7 @@ import Darwin
 
 
 
-public final class AtomicObject<T: AnyObject> {
+public final class AtomicReference<T: AnyObject> {
 
     private var ref: T?
     
