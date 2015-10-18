@@ -87,18 +87,11 @@ public enum Try<T>: TryType, CustomStringConvertible, CustomDebugStringConvertib
     
     ''Note:'': This will throw an error if it is not a success and default throws an error.
     */
-    public func getOrElse(@autoclosure defaultValue: () throws -> T) throws -> T {
+    public func getOrElse(@autoclosure defaultValue: () throws -> T) rethrows -> T {
         if isSuccess {
             return try! get()
         }
         return try defaultValue()
-    }
-    
-    public func getOrElse(@autoclosure defaultValue: () -> T) -> T {
-        if isSuccess {
-            return try! get()
-        }
-        return defaultValue()
     }
     
     
@@ -135,15 +128,9 @@ public enum Try<T>: TryType, CustomStringConvertible, CustomDebugStringConvertib
     
     ''Note:'' If `f` throws, then this method may throw an error.
     */
-    public func foreach<U>(@noescape f: T throws -> U) throws {
+    public func foreach<U>(@noescape f: T throws -> U) rethrows {
         if case let .Success(value) = self {
             try f(value)
-        }
-    }
-    
-    public func foreach<U>(@noescape f: T -> U) {
-        if case let .Success(value) = self {
-            f(value)
         }
     }
     
@@ -319,7 +306,7 @@ extension TryType where T: TryType {
 /**
 A coalescing infix operator for `Try`. Equivalent to `Try.getOrElse()`
 */
-public func ??<T>(result: Try<T>, @autoclosure defaultValue: () -> T) -> T {
-    return result.getOrElse(defaultValue)
+public func ??<T>(result: Try<T>, @autoclosure defaultValue: () throws -> T) rethrows -> T {
+    return try result.getOrElse(defaultValue)
 }
 
