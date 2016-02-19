@@ -14,11 +14,10 @@ The library also contains some basic primitives like materialized exceptions (``
 ## Example
 
 ```swift
-
-      let f = Future { 5 }
-      let g = f.filter { $0 % 2 == 1 }
-      let h = f.filter { $0 % 2 == 0 }
+let f = Future { 5 }
+let g = f.filter { $0 % 2 == 1 }
+let h = f.filter { $0 % 2 == 0 }
     
-      let gResult = Try { try Await.result(g, atMost: Duration.Zero) }
-      let hResult = Try { try Await.result(h, atMost: Duration.Zero) }
+let gResult = Try { try Await.result(g, atMost: Duration.Zero) }
+let hResult = Try { try Await.result(h, atMost: Duration.Zero) }
 ```
