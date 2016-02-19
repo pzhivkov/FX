@@ -8,9 +8,8 @@ The library also contains some basic primitives like materialized exceptions (``
 
 ## Documentation
 
-[Scala Futures documentation](http://docs.scala-lang.org/overviews/core/futures.html)
-
-[Wikipedia](https://en.wikipedia.org/wiki/Futures_and_promises)
+- [Scala Futures documentation](http://docs.scala-lang.org/overviews/core/futures.html)
+- [Wikipedia](https://en.wikipedia.org/wiki/Futures_and_promises)
 
 ## Example
 
