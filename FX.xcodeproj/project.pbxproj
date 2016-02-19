@@ -395,15 +395,9 @@
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				INFOPLIST_FILE = FX/Info.plist;
-<<<<<<< HEAD
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = "com.pzhivkov.$(PRODUCT_NAME:rfc1034identifier)";
-=======
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.pzhivkov.FX";
->>>>>>> c935d9a... Change to a dynamic framework.
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SWIFT_OBJC_BRIDGING_HEADER = "";
@@ -421,15 +415,9 @@
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				INFOPLIST_FILE = FX/Info.plist;
-<<<<<<< HEAD
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = "com.pzhivkov.$(PRODUCT_NAME:rfc1034identifier)";
-=======
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.pzhivkov.FX";
->>>>>>> c935d9a... Change to a dynamic framework.
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SWIFT_OBJC_BRIDGING_HEADER = "";
@@ -441,11 +429,7 @@
 			buildSettings = {
 				INFOPLIST_FILE = FXTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-<<<<<<< HEAD
-				PRODUCT_BUNDLE_IDENTIFIER = "com.pzhivkov.$(PRODUCT_NAME:rfc1034identifier)";
-=======
 				PRODUCT_BUNDLE_IDENTIFIER = "com.pzhivkov.FXTests";
->>>>>>> c935d9a... Change to a dynamic framework.
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -455,11 +439,7 @@
 			buildSettings = {
 				INFOPLIST_FILE = FXTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-<<<<<<< HEAD
-				PRODUCT_BUNDLE_IDENTIFIER = "com.pzhivkov.$(PRODUCT_NAME:rfc1034identifier)";
-=======
 				PRODUCT_BUNDLE_IDENTIFIER = "com.pzhivkov.FXTests";
->>>>>>> c935d9a... Change to a dynamic framework.
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
